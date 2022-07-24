@@ -1,0 +1,44 @@
+import pytest
+import json
+from tests.mocks.socket_mock import SocketMock
+from src.sockets.connection_handler import ConnectionHandler
+
+test_requests = {"sign_up": r'{"user_name": "funky_goblin"}'}
+
+test_responses = {
+    "sign_up": {
+        "user_name": "funky_goblin",
+        "user_id": "a-user-id",
+        "chatroom_id": "a-chatroom-id",
+    }
+}
+
+
+@pytest.mark.asyncio
+async def test_socket_accepts_connection():
+    socket = SocketMock(test_requests["sign_up"])
+    await socket.accept()
+
+    assert socket.connection_accepted is True
+
+
+@pytest.mark.asyncio
+async def test_socket_can_process_accepted_connection_into_JSON_object():
+    socket = SocketMock(test_requests["sign_up"])
+    connection_handler = ConnectionHandler(socket)
+    request = await connection_handler.get_request()
+
+    expected_JSON = {"user_name": "funky_goblin"}
+
+    assert request == expected_JSON
+
+
+@pytest.mark.asyncio
+async def test_socket_can_process_JSON_objects_and_send_them_():
+    socket = SocketMock(test_responses["sign_up"])
+    connection_handler = ConnectionHandler(socket)
+    await connection_handler.send_response(test_responses["sign_up"])
+
+    expected_response = r'{"user_name": "funky_goblin", "user_id": "a-user-id", "chatroom_id": "a-chatroom-id"}'
+
+    assert socket.sent_response == expected_response
