@@ -3,7 +3,7 @@ from sqlalchemy import Column, Date, ForeignKey, Integer, String, Text
 from ..session import Base
 
 
-class Messages(Base):
+class ChatRoom(Base):
     """Message Table Definition"""
 
     __tablename__ = "chatrooms"
