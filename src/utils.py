@@ -1,9 +1,13 @@
 import secrets
 
 
-def generate_random_id() -> str:
-    """Generates a secure random identifier"""
-    with open('wordlists/nouns.txt') as nouns, open('wordlists/adjectives.txt') as adjectives:
-        nouns = [noun.strip() for noun in nouns]
-        adjectives = [adj.strip() for adj in adjectives]
-        return f'{secrets.choice(adjectives)}-{secrets.choice(nouns)}-{secrets.choice(nouns)}'
+class RandomIdGenerator:
+    def __init__(self):
+        """Opens wordlists and store in memory"""
+        with open('wordlists/nouns.txt') as nouns, open('wordlists/adjectives.txt') as adjectives:
+            self._nouns = [noun.strip() for noun in nouns]
+            self._adjectives = [adj.strip() for adj in adjectives]
+
+    def __call__(self):
+        """Generates a secure random identifier"""
+        return f'{secrets.choice(self._adjectives)}-{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}'
