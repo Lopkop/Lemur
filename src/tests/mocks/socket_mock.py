@@ -3,8 +3,8 @@ import asyncio
 
 class SocketMock:
     def __init__(
-        self,
-        test_request: str = None,
+            self,
+            test_request: str = None,
     ):
         self.test_request = test_request
 
