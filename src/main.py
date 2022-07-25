@@ -32,7 +32,7 @@ async def send_message(websocket: WebSocket):
 
 @app.websocket("/get_messages")
 async def send_message(websocket: WebSocket):
-    """Sends Message to Given Chatroom"""
+    """Gets All Messages Of Given Chatroom"""
     connection = ConnectionHandler(websocket)
     request = connection.get_request()
     chatroom = (
