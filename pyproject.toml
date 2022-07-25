@@ -1,12 +1,15 @@
 [tool.poetry]
-name = "Name"
+name = "codejam22-hungry-hippogriffs"
 version = "0.1.0"
 description = ""
-authors = ["Author 1 <email@mail.com>"]
+authors = ["bmraubo <>", "Lopkop <lopkophacked@protonmail.com>", "Gaurav Panta <gp2344@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "3.10.*"
+python = "3.9.12"
+pydantic = "^1.9.1"
+pytest = "7.1.2"
+pytest-asyncio = "0.19.0"
 
 [tool.poetry.dev-dependencies]
 # Base tools
