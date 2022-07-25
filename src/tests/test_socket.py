@@ -1,6 +1,7 @@
 import pytest
-from src.tests.mocks.socket_mock import SocketMock
+
 from src.sockets.connection_handler import ConnectionHandler
+from src.tests.mocks.socket_mock import SocketMock
 
 test_requests = {"sign_up": r'{"user_name": "funky_goblin"}'}
 

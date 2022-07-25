@@ -1,5 +1,9 @@
 import secrets
 
+from pydantic import ValidationError
+
+from .models import User
+
 
 class RandomIdGenerator:
     """By calling generates random identifier"""
@@ -15,3 +19,14 @@ class RandomIdGenerator:
     def __call__(self):
         """Generates a secure random identifier"""
         return f"{secrets.choice(self._adjectives)}-{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}"
+
+
+def create_user(json_request: str, db_connection) -> None:
+    """Creates User object from model class and saves in db"""
+    try:
+        user = User.parse_raw(json_request)
+    except ValidationError as e:
+        # todo: we can parse(e.json()) and return readable exception to the user
+        print(e.json())
+    else:
+        db_connection.save_user(user)
