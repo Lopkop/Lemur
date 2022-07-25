@@ -11,5 +11,5 @@ async def sign_up(websocket: WebSocket):
     request = connection.get_request()
     # Create User Object
     # Save User To DB
-    response = {} # obtain this from the user object?
+    response = {} # uses ResponseFactory to generate Response JSON from User Object
     connection.send_response(response)
