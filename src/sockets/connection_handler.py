@@ -1,5 +1,6 @@
 import json
 
+
 class ConnectionHandler:
     def __init__(self, socket):
         self.socket = socket
@@ -17,6 +18,6 @@ class ConnectionHandler:
         await self.socket.accept()
         request = await self.socket.receive_text()
         return self.parse_request(request)
-    
+
     def parse_request(self, request: str) -> dict:
         return json.loads(request)

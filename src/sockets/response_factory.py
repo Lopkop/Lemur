@@ -1,9 +1,15 @@
 from src.db.models.messages_model import ChatRoom
-from src.models import UserModel, MessageModel, ChatRoomModel, ChatRoomResponseModel, SignUpResponseModel, SendMessageResponseModel
+from src.models import (
+    UserModel,
+    MessageModel,
+    ChatRoomModel,
+    ChatRoomResponseModel,
+    SignUpResponseModel,
+    SendMessageResponseModel,
+)
 
 
 class ResponseFactory:
-
     def generate_sign_up_response(status: bool, user_model: UserModel) -> dict:
         """Generates sign up response in JSON"""
         response_model = SignUpResponseModel(status=status, user=user_model)

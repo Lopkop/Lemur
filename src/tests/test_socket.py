@@ -7,11 +7,11 @@ from src.models import SignUpResponseModel, UserModel
 
 test_requests = {"sign_up": r'{"user_name": "funky_goblin"}'}
 
-test_user = UserModel(name="funky_goblin", user_id="a-user-id", chatroom_id="a-chatroom-id")
+test_user = UserModel(
+    name="funky_goblin", user_id="a-user-id", chatroom_id="a-chatroom-id"
+)
 
-test_responses = {
-    "sign_up": SignUpResponseModel(status=True, user=test_user).dict()
-}
+test_responses = {"sign_up": SignUpResponseModel(status=True, user=test_user).dict()}
 
 
 @pytest.mark.asyncio
