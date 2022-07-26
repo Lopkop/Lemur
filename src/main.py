@@ -2,6 +2,8 @@ import asyncio
 from fastapi import FastAPI
 from fastapi import WebSocket
 
+from sockets.connection_handler import ConnectionHandler
+
 app = FastAPI()
 # Instantiate DatabaseClient
 
@@ -31,7 +33,7 @@ async def send_message(websocket: WebSocket):
 
 
 @app.websocket("/get_messages")
-async def send_message(websocket: WebSocket):
+async def get_message(websocket: WebSocket):
     """Gets All Messages Of Given Chatroom"""
     connection = ConnectionHandler(websocket)
     request = connection.get_request()

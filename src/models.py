@@ -4,6 +4,6 @@ from pydantic import BaseModel
 class User(BaseModel):
     """User object model"""
 
-    username: str
     user_id: int
+    name: str
     chatroom_id: str
