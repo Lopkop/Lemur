@@ -6,7 +6,6 @@ class UserModel(BaseModel):
 
     name: str
     user_id: int
-    name: str
     chatroom_id: str
 
 
