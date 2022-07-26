@@ -1,5 +1,3 @@
-from nanoid import generate
-
 from src.db.models.chat_room_model import ChatRoom
 from src.db.models.user_model import User
 from src.db.session import Base, Session, engine
@@ -10,43 +8,32 @@ Base.metadata.create_all(engine)
 class UserFactory:
     """User Factory Class is used to create user"""
 
-    def create_user(self, name: str):
-        """Create a user
-
-        Creates a user and assigns a unique 5 letter chatroom id he can use
-
-        :param name: Name of User
-        :return:
-            User object of User model
-
-        """
-        user_obj = User(name=name, chat_room_id=generate(size=5))
-        Session.add(user_obj)
+    def save_user(self, user_obj):
+        """Saves user object to database"""
+        user_db_model = User(name=user_obj.name, chat_room_id=user_obj.chatroom_id)
+        Session.add(user_db_model)
         Session.commit()
         return user_obj
 
-    def fetch_user_by_name(self, name):
-        """Get User by name
+    def fetch_user_by_id(self, id):
+        """Get User by id
 
         Fetch user object by querying on name
         :param name:
         :return:
         """
-        return Session.query(User).filter_by(name=name).first()
+        return Session.query(User).filter_by(id=id).first()
 
 
 class ChatRoomFactory:
     """ChatRoom Factory to create messages"""
 
-    def create_messaage(self, chatroom_id: str, user_id: int, message: str):
+    def save_messaage(self, chatroom_id: str, user_id: int, message: str):
         """
-        Create a message in chatroom
+        Saves a message to chatroom
 
-        :param chatroom_id: chatroom id
-        :param user_id: user id; primary key of user table
-        :param message: message the user sends
+        :param chat_room_obj:
         :return:
-            ChatRoom Object
         """
         chat_room_obj = ChatRoom(
             chat_room_id=chatroom_id, user_id=user_id, message=message
@@ -69,6 +56,7 @@ class ChatRoomFactory:
         return (
             Session.query(ChatRoom)
             .filter_by(chat_room_id=chatroom_id)
+            .order_by(ChatRoom.created_at.desc())
             .limit(size)
             .offset(offset)
             .all()
