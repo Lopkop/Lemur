@@ -3,7 +3,7 @@ from typing import Union
 
 from pydantic import ValidationError
 
-from models import UserModel
+from src.models import UserModel
 
 
 class RandomIdGenerator:
