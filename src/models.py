@@ -15,7 +15,7 @@ class MessageModel(BaseModel):
 
     message_id: int
     body: str
-    timestamp: int  # todo: should be replaced (ex: datetime.datetime)
+    timestamp: datetime.datetime
 
 
 class ChatRoomModel(BaseModel):
@@ -27,10 +27,19 @@ class ChatRoomModel(BaseModel):
 
 
 class SingUpResponseModel(BaseModel):
+    """Sign Up Response Model"""
+
     status: bool
     user: UserModel
 
-
 class SendMessageResponseModel(BaseModel):
+    """Send Message Response Model"""
+
     status: bool
     message: MessageModel
+
+class ChatRoomResponseModel(BaseModel):
+    """Get Messages Response Model"""
+
+    chatroom_id: int
+    messages: list[MessageModel]
