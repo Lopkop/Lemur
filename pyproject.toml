@@ -14,7 +14,6 @@ SQLAlchemy = "^1.4.39"
 psycopg2 = "^2.9.3"
 python-dotenv = "^0.20.0"
 fastapi = "^0.79.0"
-nanoid = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 # Base tools

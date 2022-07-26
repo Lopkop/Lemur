@@ -177,14 +177,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "nanoid"
-version = "2.0.0"
-description = "A tiny, secure, URL-friendly, unique string ID generator for Python"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "nodeenv"
 version = "1.7.0"
 description = "Node.js virtual environment builder"
@@ -485,7 +477,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "3.9.12"
-content-hash = "0096b448cd6cf683692af17f4bf48d01e58a6eab8a3642cbbd334c4c7ab777ef"
+content-hash = "f5954c2727eeda3d906683d964bac152b5f9566a635068492f96675fd2b49b61"
 
 [metadata.files]
 anyio = []
@@ -519,7 +511,6 @@ mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
-nanoid = []
 nodeenv = []
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
