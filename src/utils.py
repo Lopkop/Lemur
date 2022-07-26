@@ -1,8 +1,9 @@
 import secrets
+from typing import Union
 
 from pydantic import ValidationError
 
-from .models import User
+from models import UserModel
 
 
 class RandomIdGenerator:
@@ -11,7 +12,7 @@ class RandomIdGenerator:
     def __init__(self):
         """Opens wordlists and store in memory"""
         with open("wordlists/nouns.txt") as nouns, open(
-            "wordlists/adjectives.txt"
+                "wordlists/adjectives.txt"
         ) as adjectives:
             self._nouns = [noun.strip() for noun in nouns]
             self._adjectives = [adj.strip() for adj in adjectives]
@@ -21,10 +22,13 @@ class RandomIdGenerator:
         return f"{secrets.choice(self._adjectives)}-{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}"
 
 
-def create_and_get_user(json_request: str) -> User:
-    """Creates User object from model class and returns it"""
+def create_and_get_user(request: Union[str, dict]) -> UserModel:
+    """Creates User object from json or dict and returns it"""
     try:
-        user = User.parse_raw(json_request)
+        if isinstance(request, str):
+            user = UserModel.parse_raw(request)
+        else:
+            user = UserModel(**request)
     except ValidationError as e:
         # todo: we can parse(e.json()) and return readable exception to the user
         print(e.json())
