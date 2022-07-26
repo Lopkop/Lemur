@@ -1,4 +1,5 @@
 import pytest
+import json
 
 from src.sockets.connection_handler import ConnectionHandler
 from src.tests.mocks.socket_mock import SocketMock
@@ -9,7 +10,7 @@ test_requests = {"sign_up": r'{"user_name": "funky_goblin"}'}
 test_user = UserModel(name="funky_goblin", user_id="a-user-id", chatroom_id="a-chatroom-id")
 
 test_responses = {
-    "sign_up": SignUpResponseModel(status=True, user=test_user).json()
+    "sign_up": SignUpResponseModel(status=True, user=test_user).dict()
 }
 
 
@@ -34,10 +35,10 @@ async def test_socket_can_process_accepted_connection_into_JSON_object():
 
 @pytest.mark.asyncio
 async def test_socket_can_process_JSON_objects_and_send_them_():
-    socket = SocketMock(test_responses["sign_up"])
+    socket = SocketMock(json.dumps(test_responses["sign_up"]))
     connection_handler = ConnectionHandler(socket)
     await connection_handler.send_response(test_responses["sign_up"])
 
-    expected_response = r'{"status": true, "user": {"name": "funky_goblin", "user_id": "a-user-id", "chatroom_id": "a-chatroom-id"}}'
+    expected_sent_response = r'{"status": true, "user": {"name": "funky_goblin", "user_id": "a-user-id", "chatroom_id": "a-chatroom-id"}}'
 
-    assert socket.sent_response == expected_response
+    assert socket.sent_response == expected_sent_response
