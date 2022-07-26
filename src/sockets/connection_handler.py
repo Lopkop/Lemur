@@ -1,8 +1,10 @@
+import json
+
 class ConnectionHandler:
     def __init__(self, socket):
         self.socket = socket
 
-    async def get_request(self) -> str:
+    async def get_request(self) -> dict:
         """Returns json request from client"""
         return await self.process_incoming_connection()
 
@@ -10,8 +12,11 @@ class ConnectionHandler:
         """Sends json response to the client"""
         await self.socket.send_text(response)
 
-    async def process_incoming_connection(self) -> str:
+    async def process_incoming_connection(self) -> dict:
         """Accepts connection and returns request"""
         await self.socket.accept()
         request = await self.socket.receive_text()
-        return request
+        return self.parse_request(request)
+    
+    def parse_request(self, request: str) -> dict:
+        return json.loads(request)
