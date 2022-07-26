@@ -21,12 +21,12 @@ class RandomIdGenerator:
         return f"{secrets.choice(self._adjectives)}-{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}"
 
 
-def create_user(json_request: str, db_connection) -> None:
-    """Creates User object from model class and saves in db"""
+def create_and_get_user(json_request: str) -> User:
+    """Creates User object from model class and returns it"""
     try:
         user = User.parse_raw(json_request)
     except ValidationError as e:
         # todo: we can parse(e.json()) and return readable exception to the user
         print(e.json())
     else:
-        db_connection.save_user(user)
+        return user

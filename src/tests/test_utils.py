@@ -1,6 +1,5 @@
 from src.utils import create_user
 
-from .mocks.db import MockDataBase
 
 json_signup_request = """
 {
@@ -11,11 +10,9 @@ json_signup_request = """
 """
 
 
-def test_create_user():
-    db = MockDataBase()
-    create_user(json_signup_request, db)
+def test_create_user_works_correctly():
+    user = create_user(json_signup_request)
 
-    assert db.user_saved is True
-    assert db.users.get(123415).user_id == 123415
-    assert db.users.get(123415).username == 'funky_goblin'
-    assert db.users.get(123415).chatroom_id == 'a-chatroom-id'
+    assert user.user_id == 123415
+    assert user.chatroom_id == "a-chatroom-id"
+    assert user.username == "funky_goblin"
