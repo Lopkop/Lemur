@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Date, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from ..session import Base
+from .chat_room_model import ChatRoom
 
 
 class User(Base):
@@ -11,10 +12,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     chat_room_id = Column(String, unique=True)
-    created_at = Column(Date)
-    updated_at = Column(Date)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), server_onupdate=func.now())
 
-    children = relationship("messages")
+    children = relationship(ChatRoom)
 
     def __repr__(self):
         return "<User(name='{}', chat_room_id='{}')>".format(
