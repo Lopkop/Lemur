@@ -8,9 +8,9 @@ class ConnectionHandler:
         """Returns json request from client"""
         return await self.process_incoming_connection()
 
-    async def send_response(self, response: str) -> None:
+    async def send_response(self, response: dict) -> None:
         """Sends json response to the client"""
-        await self.socket.send_text(response)
+        await self.socket.send_text(json.dumps(response))
 
     async def process_incoming_connection(self) -> dict:
         """Accepts connection and returns request"""
