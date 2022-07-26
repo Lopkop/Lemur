@@ -1,11 +1,11 @@
 from pydantic import BaseModel
-
+from datetime import datetime
 
 class UserModel(BaseModel):
     """User object model"""
 
     name: str
-    user_id: int
+    user_id: str
     chatroom_id: str
 
 
@@ -14,18 +14,18 @@ class MessageModel(BaseModel):
 
     message_id: int
     body: str
-    timestamp: datetime.datetime
+    timestamp: datetime
 
 
 class ChatRoomModel(BaseModel):
     """ChatRoom object model"""
 
-    chatroom_id: int
+    chatroom_id: str
     messages: list[MessageModel]
     user_id: int
 
 
-class SingUpResponseModel(BaseModel):
+class SignUpResponseModel(BaseModel):
     """Sign Up Response Model"""
 
     status: bool
