@@ -15,6 +15,7 @@ class MessageModel(BaseModel):
     """Message object model"""
 
     message_id: int
+    user_id: int
     body: str
     timestamp: datetime
 
