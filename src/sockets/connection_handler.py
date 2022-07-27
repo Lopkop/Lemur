@@ -2,29 +2,22 @@ import json
 
 
 class ConnectionHandler:
-    """Connection hanlder for websockets"""
-
     def __init__(self, socket):
         self.socket = socket
-        self.accept_request()
-
-    async def accept_request(self):
-        """Accepts connection"""
-        self.socket.accept()
 
     async def get_request(self) -> dict:
-        """Get Data in Request"""
+        """Returns json request from client"""
         return await self.process_incoming_connection()
 
-    async def send_response(self, response: dict):
-        """Send Response to websocket"""
+    async def send_response(self, response: dict) -> None:
+        """Sends json response to the client"""
         await self.socket.send_text(json.dumps(response))
 
     async def process_incoming_connection(self) -> dict:
-        """Process Incoming Connection and get request"""
+        """Accepts connection and returns request"""
+        await self.socket.accept()
         request = await self.socket.receive_text()
         return self.parse_request(request)
 
     def parse_request(self, request: str) -> dict:
-        """Parse data from request string"""
         return json.loads(request)
