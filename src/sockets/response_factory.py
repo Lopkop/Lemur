@@ -21,5 +21,5 @@ class ResponseFactory:
 
     def generate_get_messages_response(chatroom: ChatRoomModel) -> dict:
         """Generates get_messages response in JSON"""
-        chatroom_model = ChatRoomResponseModel(chatroom)
-        return chatroom_model.dict()
+        response_model = ChatRoomResponseModel(**chatroom.dict(exclude={'user_id'}))
+        return response_model.dict()
