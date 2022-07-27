@@ -1,9 +1,9 @@
-from datetime import datetime
 import secrets
+from datetime import datetime
 
 from pydantic import ValidationError
 
-from models import UserModel, MessageModel, ChatRoomModel
+from models import ChatRoomModel, MessageModel, UserModel
 
 
 class RandomIdGenerator:
@@ -12,14 +12,14 @@ class RandomIdGenerator:
     def __init__(self):
         """Opens wordlists and store in memory"""
         with open("wordlists/nouns.txt") as nouns, open(
-                "wordlists/adjectives.txt"
+            "wordlists/adjectives.txt"
         ) as adjectives:
             self._nouns = [noun.strip() for noun in nouns]
             self._adjectives = [adj.strip() for adj in adjectives]
 
     def _generate_user_id(self):
         """Generates random user id"""
-        return f'{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}'
+        return f"{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}"
 
     def __call__(self, user_id=False):
         """Generates a secure random identifier"""
@@ -42,7 +42,9 @@ def create_and_get_user(user_id: str, chatroom_id: str, username: str) -> UserMo
 def create_and_get_message(message_id: int, body: str) -> MessageModel:
     """Creates Message object and returns it"""
     try:
-        message = MessageModel(message_id=message_id, body=body, timestamp=datetime.now())
+        message = MessageModel(
+            message_id=message_id, body=body, timestamp=datetime.now()
+        )
     except ValidationError as e:
         print(e.json())
     else:
