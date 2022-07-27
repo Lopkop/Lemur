@@ -1,11 +1,10 @@
-from src.db.models.messages_model import ChatRoom
 from src.models import (
-    UserModel,
-    MessageModel,
     ChatRoomModel,
     ChatRoomResponseModel,
-    SignUpResponseModel,
+    MessageModel,
     SendMessageResponseModel,
+    SignUpResponseModel,
+    UserModel,
 )
 
 

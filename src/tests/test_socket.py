@@ -1,9 +1,10 @@
-import pytest
 import json
 
+import pytest
+
+from src.models import SignUpResponseModel, UserModel
 from src.sockets.connection_handler import ConnectionHandler
 from src.tests.mocks.socket_mock import SocketMock
-from src.models import SignUpResponseModel, UserModel
 
 test_requests = {"sign_up": r'{"user_name": "funky_goblin"}'}
 
