@@ -13,14 +13,11 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(String, unique=True)
     name = Column(String)
-    chat_room_id = Column(String, unique=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), server_onupdate=func.now())
 
-    children = relationship(ChatRoom)
+    chatroom = relationship(ChatRoom)
     children_2 = relationship(Message)
 
     def __repr__(self):
-        return "<User(name='{}', chat_room_id='{}')>".format(
-            self.name, self.chat_room_id
-        )
+        return f"<User(name='{self.name}', user_id='{self.user_id}')>"

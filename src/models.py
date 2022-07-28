@@ -8,14 +8,13 @@ class UserModel(BaseModel):
 
     name: str
     user_id: str
-    chatroom_id: str
 
 
 class MessageModel(BaseModel):
     """Message object model"""
 
     message_id: int
-    user_id: int
+    user_id: str
     body: str
     timestamp: datetime
 
@@ -25,7 +24,7 @@ class ChatRoomModel(BaseModel):
 
     chatroom_id: str
     messages: list[MessageModel]
-    user_id: str
+    users: list[UserModel]
 
 
 # Response Models
