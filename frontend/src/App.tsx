@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles/App.css' 
+import {Footer} from './components'
 
 // todo: finish footer
 function App() {
@@ -11,11 +12,7 @@ function App() {
     	<main>
 		<input id="input-username" type="text" placeholder="Write username"/>
 	</main>
-
-	<footer>
-		<a href="#">about us</a>
-		discord icon
-	</footer>
+	<Footer />
     </div>
   );
 }
