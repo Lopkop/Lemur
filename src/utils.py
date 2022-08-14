@@ -11,7 +11,7 @@ class RandomIdGenerator:
     def __init__(self):
         """Opens wordlists and store in memory"""
         with open("wordlists/nouns.txt") as nouns, open(
-                "wordlists/adjectives.txt"
+            "wordlists/adjectives.txt"
         ) as adjectives:
             self._nouns = [noun.strip() for noun in nouns]
             self._adjectives = [adj.strip() for adj in adjectives]
@@ -21,7 +21,7 @@ class RandomIdGenerator:
         return f"{secrets.choice(self._nouns)}#{''.join([f'{secrets.randbelow(10)}' for _ in range(4)])}"
 
     def _generate_message_id(self):
-        return ''.join([f'{secrets.randbelow(10)}' for _ in range(4)])
+        return "".join([f"{secrets.randbelow(10)}" for _ in range(4)])
 
     def __call__(self, user_id=False, message_id=False):
         """Generates a secure random identifier"""

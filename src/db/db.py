@@ -1,6 +1,4 @@
-from src.db.models import ChatRoom
-from src.db.models import Message
-from src.db.models import User
+from src.db.models import ChatRoom, Message, User
 from src.db.session import Session
 from src.schemas import ChatRoomModel, MessageModel, UserModel
 
@@ -15,7 +13,9 @@ class DatabaseService:
         Session.add(user)
         Session.commit()
 
-    def add_user_to_chatroom(self, user_model: UserModel, chatroom_model: ChatRoomModel):
+    def add_user_to_chatroom(
+        self, user_model: UserModel, chatroom_model: ChatRoomModel
+    ):
         user = self.fetch_user_by_name(user_model.name)
         chat = self.fetch_chat_by_name(chatroom_model.name)
         user.chatroom = chat.name
@@ -57,10 +57,10 @@ class DatabaseService:
         offset = page * size
         messages = (
             Session.query(Message)
-                .filter_by(chatroom=chatroom_name)
-                .order_by(Message.created_at.desc())
-                .limit(size)
-                .offset(offset)
-                .all()
+            .filter_by(chatroom=chatroom_name)
+            .order_by(Message.created_at.desc())
+            .limit(size)
+            .offset(offset)
+            .all()
         )
         return messages

@@ -1,7 +1,6 @@
-from sqlalchemy import Column, DateTime, Integer, String, func, Text, ForeignKey
-from sqlalchemy.orm import relationship
-
 from session import Base
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import relationship
 
 
 class Message(Base):
@@ -12,7 +11,7 @@ class Message(Base):
     text = Column(Text)
     created_at = Column(DateTime, server_default=func.now())
 
-    chatroom = Column(String, ForeignKey('chatrooms.name'))
+    chatroom = Column(String, ForeignKey("chatrooms.name"))
     user = Column(String, ForeignKey("users.name"))
 
     def __repr__(self):
@@ -26,7 +25,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
 
-    chatroom = Column(String, ForeignKey('chatrooms.name'))
+    chatroom = Column(String, ForeignKey("chatrooms.name"))
     messages = relationship(Message)
 
     def __repr__(self):
