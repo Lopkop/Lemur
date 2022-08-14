@@ -2,7 +2,7 @@ import secrets
 
 from pydantic import ValidationError
 
-from schemas import ChatRoomModel, MessageModel, UserModel
+from src.db.schemas import ChatRoomModel, MessageModel, UserModel
 
 
 class RandomIdGenerator:

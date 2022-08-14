@@ -1,4 +1,4 @@
-from src.schemas import UserModel
+from src.db.schemas import UserModel
 from src.sockets.response_factory import ResponseFactory
 
 test_data = {
