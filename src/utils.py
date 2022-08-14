@@ -1,9 +1,8 @@
 import secrets
-from datetime import datetime
 
 from pydantic import ValidationError
 
-from models import ChatRoomModel, MessageModel, UserModel
+from schemas import ChatRoomModel, MessageModel, UserModel
 
 
 class RandomIdGenerator:
@@ -34,10 +33,10 @@ class RandomIdGenerator:
 
 
 # Models API
-def create_and_get_user(user_id: str, username: str) -> UserModel:
+def create_and_get_user(username: str) -> UserModel:
     """Creates User object from returns it"""
     try:
-        user = UserModel(user_id=user_id, name=username)
+        user = UserModel(name=username)
     except ValidationError as e:
         # todo: we can parse(e.json()) and return readable exception to the user
         print(e.json())
@@ -45,22 +44,20 @@ def create_and_get_user(user_id: str, username: str) -> UserModel:
         return user
 
 
-def create_and_get_message(user_id: str, message_id: int, body: str) -> MessageModel:
+def create_and_get_message(username: str, text: str) -> MessageModel:
     """Creates Message object and returns it"""
     try:
-        message = MessageModel(
-            user_id=user_id, message_id=message_id, body=body, timestamp=datetime.now()
-        )
+        message = MessageModel(user=username, text=text)
     except ValidationError as e:
         print(e.json())
     else:
         return message
 
 
-def create_and_get_chatroom(user: UserModel, chatroom_id: str) -> ChatRoomModel:
+def create_and_get_chatroom(user: UserModel, name: str) -> ChatRoomModel:
     """Creates Chatroom object and returns it"""
     try:
-        chatroom = ChatRoomModel(users=[user], chatroom_id=chatroom_id, messages=[])
+        chatroom = ChatRoomModel(users=[user], name=name, messages=[])
     except ValidationError as e:
         print(e.json())
     else:

@@ -1,4 +1,4 @@
-from src.models import (
+from src.schemas import (
     ChatRoomModel,
     ChatRoomResponseModel,
     MessageModel,
