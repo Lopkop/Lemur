@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from pydantic import BaseModel
 
 
@@ -7,24 +5,21 @@ class UserModel(BaseModel):
     """User object model"""
 
     name: str
-    user_id: str
-    chatroom_id: str
 
 
 class MessageModel(BaseModel):
     """Message object model"""
 
-    message_id: int
-    body: str
-    timestamp: datetime
+    user: str
+    text: str
 
 
 class ChatRoomModel(BaseModel):
     """ChatRoom object model"""
 
-    chatroom_id: str
+    name: str
     messages: list[MessageModel]
-    user_id: str
+    users: list[UserModel]
 
 
 # Response Models
@@ -45,5 +40,5 @@ class SendMessageResponseModel(BaseModel):
 class ChatRoomResponseModel(BaseModel):
     """Get Messages Response Model"""
 
-    chatroom_id: str
+    name: str
     messages: list[MessageModel]

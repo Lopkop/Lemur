@@ -1,4 +1,4 @@
-from src.models import (
+from src.schemas import (
     ChatRoomModel,
     ChatRoomResponseModel,
     MessageModel,
@@ -21,5 +21,5 @@ class ResponseFactory:
 
     def generate_get_messages_response(chatroom: ChatRoomModel) -> dict:
         """Generates get_messages response in JSON"""
-        response_model = ChatRoomResponseModel(**chatroom.dict(exclude={"user_id"}))
+        response_model = ChatRoomResponseModel(**chatroom.dict(exclude={"users"}))
         return response_model.dict()

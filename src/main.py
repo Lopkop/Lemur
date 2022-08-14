@@ -5,6 +5,8 @@ from fastapi import FastAPI, WebSocket
 from sockets.connection_handler import ConnectionHandler
 
 app = FastAPI()
+
+
 # Instantiate DatabaseClient
 
 
@@ -14,9 +16,7 @@ async def sign_up(websocket: WebSocket):
     connection = ConnectionHandler(websocket)
     request = connection.get_request()
     # Create User Object
-    # Create Chatroom Object
     # Save User To DB
-    # Save Chatroom to DB
     response = {}  # uses ResponseFactory to generate Response JSON from User Object
     connection.send_response(response)
 
