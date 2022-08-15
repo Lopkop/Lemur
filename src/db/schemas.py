@@ -37,8 +37,15 @@ class SendMessageResponseModel(BaseModel):
     message: MessageModel
 
 
-class ChatRoomResponseModel(BaseModel):
+class GetMessagesResponseModel(BaseModel):
     """Get Messages Response Model"""
 
+    status: bool
     name: str
     messages: list[MessageModel]
+
+
+class CreateChatResponseModel(ChatRoomModel):
+    """Create Chatroom Response Model"""
+
+    status: bool
