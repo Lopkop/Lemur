@@ -45,7 +45,7 @@ class GetMessagesResponseModel(BaseModel):
     messages: list[MessageModel]
 
 
-class CreateChatResponseModel(ChatRoomModel):
-    """Create Chatroom Response Model"""
+class ChatResponseModel(ChatRoomModel):
+    """Chatroom Response Model"""
 
     status: bool

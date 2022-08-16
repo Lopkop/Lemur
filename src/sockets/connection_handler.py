@@ -17,7 +17,4 @@ class ConnectionHandler:
         """Accepts connection and returns request"""
         await self.socket.accept()
         request = await self.socket.receive_text()
-        return self.parse_request(request)
-
-    def parse_request(self, request: str) -> dict:
-        return json.loads(request)
+        return request
