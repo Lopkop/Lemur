@@ -5,6 +5,7 @@ from src.db.schemas import (
     SendMessageResponseModel,
     SignUpResponseModel,
     UserModel, ChatResponseModel,
+    UserUndefinedModel
 )
 
 
@@ -33,5 +34,5 @@ class ResponseFactory:
         return response_model
 
     @staticmethod
-    def generate_user_undefined_error_response(user: UserModel) -> dict:
-        return {'status': 'error', 'user': user}
+    def generate_user_undefined_error_response(user: UserModel) -> UserUndefinedModel:
+        return UserUndefinedModel(name=user.name, status=False)
