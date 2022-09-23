@@ -49,3 +49,7 @@ class ChatResponseModel(ChatRoomModel):
     """Chatroom Response Model"""
 
     status: bool
+
+
+class UserUndefinedModel(UserModel):
+    status: bool
