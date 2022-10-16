@@ -64,16 +64,14 @@ class DatabaseService:
         return chat
 
     @staticmethod
-    def fetch_chatroom_messages(session: scoped_session, chatroom_name: str, page: int = 1, size: int = 20):
+    def fetch_chatroom_messages(session: scoped_session, chatroom_name: str):
         """Fetch all messages in a chat room"""
-        page = page - 1
-        offset = page * size
         messages = (
             session.query(Message)
                 .filter_by(chatroom=chatroom_name)
-                .order_by(Message.created_at.desc())
-                .limit(size)
-                .offset(offset)
+                #.order_by(Message.created_at.acs())
                 .all()
         )
+        # convert all message models to schemas so it could be used in application
+        messages = [dict(user=message.user, text=message.text) for message in messages]
         return messages

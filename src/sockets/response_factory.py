@@ -4,8 +4,9 @@ from src.db.schemas import (
     MessageModel,
     SendMessageResponseModel,
     SignUpResponseModel,
-    UserModel, ChatResponseModel,
-    UserUndefinedModel
+    UserModel,
+    UserUndefinedModel,
+    ChatResponseModel
 )
 
 
@@ -29,7 +30,7 @@ class ResponseFactory:
         return response_model
 
     @staticmethod
-    def generate_chat_response(status: bool, chatroom: ChatRoomModel) -> ChatResponseModel:
+    def generate_chat_response(status: bool, chatroom: ChatRoomModel):
         response_model = ChatResponseModel(**chatroom.dict(), status=status)
         return response_model
 

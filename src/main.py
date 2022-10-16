@@ -56,11 +56,12 @@ async def create_chat(user: schemas.UserModel, session: scoped_session = Depends
     return response.generate_chat_response(False, chat)
 
 
-@app.post('/connect-to-chat', response_model=Union[schemas.UserUndefinedModel,
-                                                   schemas.ChatResponseModel])
+@app.post('/connect-to-chat')
 async def connect_to_chat(chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)):
     """Connects user to chatroom"""
     user = chat.users[0]
+    messages = db.fetch_chatroom_messages(session, chat.name)
+    chat.messages = messages
     if not (user_db := db.fetch_user_by_name(session, user.name)):
         return response.generate_user_undefined_error_response(user)
     if not db.fetch_chat_by_name(session, chat.name):
@@ -76,14 +77,13 @@ async def connect_to_chat(chat: schemas.ChatRoomModel, session: scoped_session =
 async def websocket_endpoint(websocket: WebSocket, username: str, chatroom: str,
                              session: scoped_session = Depends(db.get_db)):
     await manager.connect(chatroom, username, websocket)
-    await manager.send_message(chatroom, f'ok')
 
-    now = datetime.now()
-    current_time = now.strftime("%H:%M")
     try:
         while True:
             text = await websocket.receive_text()
             message = MessageModel(text=text, user=username)
+            db.save_message(session, chatroom, message)
+
             await manager.send_message(chatroom, message.json())
             print(f'{username} sent "{text}" to {chatroom}')
 
