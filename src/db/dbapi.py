@@ -69,7 +69,6 @@ class DatabaseService:
         messages = (
             session.query(Message)
                 .filter_by(chatroom=chatroom_name)
-                #.order_by(Message.created_at.acs())
                 .all()
         )
         # convert all message models to schemas so it could be used in application
