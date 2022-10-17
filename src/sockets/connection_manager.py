@@ -16,6 +16,5 @@ class ConnectionManager:
         del self.active_connections[chatroom][user_id]
 
     async def send_message(self, chatroom, message):
-        print(self.active_connections)
         for websocket in self.active_connections[chatroom].values():
             await websocket.send_text(message)
