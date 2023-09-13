@@ -5,11 +5,11 @@ from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect
 from sqlalchemy.orm import scoped_session
 
 from sockets.connection_manager import ConnectionManager
-from src.db.dbapi import DatabaseService
-from src.db import schemas
-from src.db.schemas import MessageModel
-from src.sockets.response_factory import ResponseFactory
-from src.utils import RandomIdGenerator, create_and_get_chatroom, create_and_get_message
+from db.dbapi import DatabaseService
+from db import schemas
+from db.schemas import MessageModel
+from sockets.response_factory import ResponseFactory
+from utils import RandomIdGenerator, create_and_get_chatroom, create_and_get_message
 
 app = FastAPI()
 db = DatabaseService()
@@ -85,7 +85,7 @@ async def websocket_endpoint(websocket: WebSocket, username: str, chatroom: str,
             db.save_message(session, chatroom, message)
 
             await manager.send_message(chatroom, message.json())
-            print(f'{username} sent "{text}" to {chatroom}')
+            print(f'{username} sent "{text}" to {chatroom}') # need to log, not print
 
     except WebSocketDisconnect:
         manager.disconnect(chatroom, username)

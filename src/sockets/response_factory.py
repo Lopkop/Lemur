@@ -1,4 +1,4 @@
-from src.db.schemas import (
+from db.schemas import (
     ChatRoomModel,
     GetMessagesResponseModel,
     MessageModel,

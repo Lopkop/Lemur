@@ -1,8 +1,8 @@
 from sqlalchemy.orm.scoping import scoped_session
 
-from src.db.database import SessionLocal
-from src.db.models import ChatRoom, Message, User
-from src.db.schemas import ChatRoomModel, MessageModel, UserModel
+from db.database import SessionLocal
+from db.models import ChatRoom, Message, User
+from db.schemas import ChatRoomModel, MessageModel, UserModel
 
 
 class DatabaseService:
