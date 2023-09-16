@@ -10,6 +10,7 @@ from db import schemas
 from db.schemas import MessageModel
 from sockets.response_factory import ResponseFactory
 from utils import RandomIdGenerator, create_and_get_chatroom, create_and_get_message
+
 # todo: later should be replaced
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 # todo: время через которое будет удаляться чат; время жизни чата и юзер тоже должен удаляться
+
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
 async def sign_up(

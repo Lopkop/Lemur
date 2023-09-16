@@ -8,12 +8,12 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "3.11.2"
 pydantic = "^1.9.1"
-pytest = "7.1.2"
+pytest = "^7.4.2"
 pytest-asyncio = "0.19.0"
 SQLAlchemy = "^1.4.39"
 psycopg2 = "^2.9.3"
 python-dotenv = "^0.20.0"
-fastapi = "^0.79.0"
+fastapi = "^0.103.1"
 uvicorn = {extras = ["standard"], version = "^0.18.2"}
 
 [tool.poetry.dev-dependencies]

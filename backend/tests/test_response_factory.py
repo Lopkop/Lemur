@@ -1,5 +1,5 @@
-from src.db.schemas import UserModel
-from src.sockets.response_factory import ResponseFactory
+from backend.db.schemas import UserModel
+from backend.sockets.response_factory import ResponseFactory
 
 test_data = {
     "new_user": UserModel(

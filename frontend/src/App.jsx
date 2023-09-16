@@ -23,7 +23,7 @@ async function connect(event) {
         localStorage.user = username
         window.location.pathname = `/chat/${chat}`;
     } else {
-        alert("baaad! either username or chatroom name is undefined");
+        alert("Either username or chatroom name is incorrect");
     }
 }
 
