@@ -9,7 +9,7 @@ class RandomIdGenerator:
     """Secure random id generator"""
 
     def __init__(self):
-        """Opens wordlists and store in memory"""
+        """Opens wordlists and stores them in memory"""
         with open("wordlists/nouns.txt") as nouns, open(
             "wordlists/adjectives.txt"
         ) as adjectives:
@@ -20,16 +20,18 @@ class RandomIdGenerator:
         """Generates random user id"""
         return f"{secrets.choice(self._nouns)}#{''.join([f'{secrets.randbelow(10)}' for _ in range(4)])}"
 
-    def _generate_message_id(self):
+    @staticmethod
+    def _generate_message_id():
         return "".join([f"{secrets.randbelow(10)}" for _ in range(4)])
 
-    def __call__(self, user_id=False, message_id=False):
+    def __call__(self, user_id=False, message_id=False, chatroom_name=False):
         """Generates a secure random identifier"""
         if user_id:
             return self._generate_user_id()
         elif message_id:
             return self._generate_message_id()
-        return f"{secrets.choice(self._adjectives)}-{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}"
+        elif chatroom_name:
+            return f"{secrets.choice(self._adjectives)}-{secrets.choice(self._nouns)}-{secrets.choice(self._nouns)}"
 
 
 # Models API

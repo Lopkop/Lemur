@@ -6,27 +6,35 @@ from db.schemas import (
     SignUpResponseModel,
     UserModel,
     UserUndefinedModel,
-    ChatResponseModel
+    ChatResponseModel,
 )
 
 
 class ResponseFactory:
     @staticmethod
-    def generate_sign_up_response(status: bool, user_model: UserModel) -> SignUpResponseModel:
+    def generate_sign_up_response(
+        status: bool, user_model: UserModel
+    ) -> SignUpResponseModel:
         """Generates sign up response in JSON"""
         response_model = SignUpResponseModel(status=status, user=user_model)
         return response_model
 
     @staticmethod
-    def generate_send_message_response(status: bool, message: MessageModel) -> SendMessageResponseModel:
+    def generate_send_message_response(
+        status: bool, message: MessageModel
+    ) -> SendMessageResponseModel:
         """Generates send_message response in JSON"""
         response_model = SendMessageResponseModel(status=status, message=message)
         return response_model
 
     @staticmethod
-    def generate_get_messages_response(status: bool, chatroom: ChatRoomModel) -> GetMessagesResponseModel:
+    def generate_get_messages_response(
+        status: bool, chatroom: ChatRoomModel
+    ) -> GetMessagesResponseModel:
         """Generates get_messages response in JSON"""
-        response_model = GetMessagesResponseModel(**chatroom.dict(exclude={"users"}), status=status)
+        response_model = GetMessagesResponseModel(
+            **chatroom.dict(exclude={"users"}), status=status
+        )
         return response_model
 
     @staticmethod

@@ -10,14 +10,13 @@ from db import schemas
 from db.schemas import MessageModel
 from sockets.response_factory import ResponseFactory
 from utils import RandomIdGenerator, create_and_get_chatroom, create_and_get_message
+# todo: later should be replaced
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 db = DatabaseService()
 response = ResponseFactory()
 manager = ConnectionManager()
-
-# todo: later should be replaced
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,11 +26,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# время через которое будет удаляться чат; время жизни чата и юзер тоже должен удаляться
+# todo: время через которое будет удаляться чат; время жизни чата и юзер тоже должен удаляться
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
-async def sign_up(user: schemas.UserModel, session: scoped_session = Depends(db.get_db)):
+async def sign_up(
+    user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
+):
     """Signs Up New Users"""
     # todo: check if user is already signed in
     db.save_user(session, user)
@@ -41,13 +41,15 @@ async def sign_up(user: schemas.UserModel, session: scoped_session = Depends(db.
 
 
 @app.post("/create-chat", response_model=Union[schemas.ChatRoomModel, dict])
-async def create_chat(user: schemas.UserModel, session: scoped_session = Depends(db.get_db)):
+async def create_chat(
+    user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
+):
     """Create chatroom and save to db"""
     if not db.fetch_user_by_name(session, user.name):
         return response.generate_user_undefined_error_response(user)
 
     generate_id = RandomIdGenerator()
-    chatroom_name = generate_id()
+    chatroom_name = generate_id(chatroom_name=True)
     chat = create_and_get_chatroom(user, name=chatroom_name)
     db.save_chatroom(session, chat)
 
@@ -56,8 +58,10 @@ async def create_chat(user: schemas.UserModel, session: scoped_session = Depends
     return response.generate_chat_response(False, chat)
 
 
-@app.post('/connect-to-chat')
-async def connect_to_chat(chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)):
+@app.post("/connect-to-chat")
+async def connect_to_chat(
+    chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)
+):
     """Connects user to chatroom"""
     user = chat.users[0]
     messages = db.fetch_chatroom_messages(session, chat.name)
@@ -74,8 +78,12 @@ async def connect_to_chat(chat: schemas.ChatRoomModel, session: scoped_session =
 
 
 @app.websocket("/ws/{chatroom}/{username}")
-async def websocket_endpoint(websocket: WebSocket, username: str, chatroom: str,
-                             session: scoped_session = Depends(db.get_db)):
+async def websocket_endpoint(
+    websocket: WebSocket,
+    username: str,
+    chatroom: str,
+    session: scoped_session = Depends(db.get_db),
+):
     await manager.connect(chatroom, username, websocket)
 
     try:
@@ -85,7 +93,7 @@ async def websocket_endpoint(websocket: WebSocket, username: str, chatroom: str,
             db.save_message(session, chatroom, message)
 
             await manager.send_message(chatroom, message.json())
-            print(f'{username} sent "{text}" to {chatroom}') # need to log, not print
+            print(f'{username} sent "{text}" to {chatroom}')  # need to log, not print
 
     except WebSocketDisconnect:
         manager.disconnect(chatroom, username)
