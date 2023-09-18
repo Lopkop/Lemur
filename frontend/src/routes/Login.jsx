@@ -1,6 +1,6 @@
 import React from "react";
-import "./styles/App.css";
-import { Footer } from "./components";
+import "../styles/App.css";
+import { Footer } from "../components";
 
 async function connect(event) {
     let username = document.getElementById("input-username").value;
@@ -22,12 +22,13 @@ async function connect(event) {
         localStorage.chat = chat
         localStorage.user = username
         window.location.pathname = `/chat/${chat}`;
+        // todo: render new page with chat
     } else {
         alert("Either username or chatroom name is incorrect");
     }
 }
 
-function App() {
+export default function Chat() {
     return (
         <div className="App">
             <header>
@@ -52,5 +53,3 @@ function App() {
         </div>
     );
 }
-
-export default App;
