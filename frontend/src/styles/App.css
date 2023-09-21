@@ -47,10 +47,41 @@ main {
     font-style: italic;
 }
 
+.message-button {
+
+}
+
+.send-form {
+    display: flex;
+    align-self: flex-end;
+    justify-content: center;
+    background-color: #e7e7e7;
+}
+
+.chat {
+    display: flex;
+    border: 0.5px ridge;
+    border-radius: 5px;
+    padding: 16px;
+    margin-bottom: 10px;
+
+    background: white;
+    transition: box-shadow 0.3s ease-in-out;
+    text-decoration: none;
+
+    width: 500px;
+    height: 500px;
+    font-size: 24px;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: 1.4em;
+}
+
 footer {
     text-align: center;
     background-color: #e7e7e7;
     padding: 15px 0px 15px 0px;
+    margin-top: 30x;
     font-family: "Manrope", Arial, sans-serif;
 }
 
