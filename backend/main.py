@@ -79,7 +79,7 @@ async def connect_to_chat(
     return response.generate_chat_response(status=False, chatroom=chat)
 
 
-@app.websocket("/ws/{chatroom}/{username}")
+@app.websocket("/{chatroom}/{username}")
 async def websocket_endpoint(
     websocket: WebSocket,
     username: str,
