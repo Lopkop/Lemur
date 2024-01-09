@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Login from './routes/Login'
+import CreateLogin from './routes/CreateLogin'
+import ConnectLogin from './routes/ConnectLogin'
 import {
   createBrowserRouter,
   RouterProvider,
@@ -10,8 +11,13 @@ import Chat from "./routes/Chat"
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Login />,
+    path: "/create_chat",
+    element: <CreateLogin />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/connect_chat",
+    element: <ConnectLogin />,
     errorElement: <ErrorPage />,
   },
   {
