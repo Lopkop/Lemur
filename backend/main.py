@@ -1,6 +1,7 @@
+from datetime import timedelta
 from typing import Annotated
 
-from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException, status
 from sqlalchemy.orm import scoped_session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware  # todo: later should be replaced
@@ -10,7 +11,8 @@ from db.dbapi import DatabaseService
 from db import schemas
 from db.schemas import MessageModel
 from sockets.response_factory import ResponseFactory
-from utils import RandomIdGenerator, create_and_get_chatroom, hash_password
+from utils import RandomIdGenerator, create_and_get_chatroom
+from security import authenticate_user, create_access_token
 
 app = FastAPI()
 db = DatabaseService()
@@ -30,14 +32,19 @@ app.add_middleware(
 @app.post("/login")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                 session: scoped_session = Depends(db.get_db)):
-    user = db.fetch_user_by_name(session, form_data.username)
+    user = authenticate_user(session, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username")
-    hashed_password = hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    return {"access_token": user.name, "token_type": "bearer"}
+    access_token_expires = timedelta(minutes=user.lifetime)
+    access_token = create_access_token(
+        data={"sub": user.name}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
@@ -45,6 +52,12 @@ async def sign_up(
         user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
 ):
     """Signs Up New Users"""
+    if db.fetch_user_by_name(session, user.name):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='User with this name already exists',
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     db.save_user(session, user)
     if db.fetch_user_by_name(session, user.name):
         return response.generate_sign_up_response(True, user)
