@@ -11,7 +11,7 @@ class RandomIdGenerator:
     def __init__(self):
         """Opens wordlists and stores them in memory"""
         with open("wordlists/nouns.txt") as nouns, open(
-            "wordlists/adjectives.txt"
+                "wordlists/adjectives.txt"
         ) as adjectives:
             self._nouns = [noun.strip() for noun in nouns]
             self._adjectives = [adj.strip() for adj in adjectives]
@@ -35,10 +35,10 @@ class RandomIdGenerator:
 
 
 # Models API
-def create_and_get_user(username: str) -> UserModel:
+def create_and_get_user(username: str, password: str, lifetime: int) -> UserModel:
     """Creates User object from returns it"""
     try:
-        user = UserModel(name=username)
+        user = UserModel(name=username, password=password, lifetime=lifetime)
     except ValidationError as e:
         # todo: we can parse(e.json()) and return readable exception to the user
         print(e.json())
@@ -64,3 +64,7 @@ def create_and_get_chatroom(user: UserModel, name: str) -> ChatRoomModel:
         print(e.json())
     else:
         return chatroom
+
+
+def hash_password(password: str):
+    return "fakehashed" + password

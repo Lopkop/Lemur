@@ -1,23 +1,22 @@
-from datetime import datetime
-from typing import Union
+from typing import Annotated
 
-from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException
 from sqlalchemy.orm import scoped_session
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware  # todo: later should be replaced
 
 from sockets.connection_manager import ConnectionManager
 from db.dbapi import DatabaseService
 from db import schemas
 from db.schemas import MessageModel
 from sockets.response_factory import ResponseFactory
-from utils import RandomIdGenerator, create_and_get_chatroom, create_and_get_message
-
-# todo: later should be replaced
-from fastapi.middleware.cors import CORSMiddleware
+from utils import RandomIdGenerator, create_and_get_chatroom, hash_password
 
 app = FastAPI()
 db = DatabaseService()
 response = ResponseFactory()
 manager = ConnectionManager()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,24 +26,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# todo: время через которое будет удаляться чат; время жизни чата и юзер тоже должен удаляться
+
+@app.post("/login")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                session: scoped_session = Depends(db.get_db)):
+    user = db.fetch_user_by_name(session, form_data.username)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username")
+    hashed_password = hash_password(form_data.password)
+    if not hashed_password == user.hashed_password:
+        raise HTTPException(status_code=400, detail="Incorrect password")
+
+    return {"access_token": user.name, "token_type": "bearer"}
 
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
 async def sign_up(
-    user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
+        user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
 ):
     """Signs Up New Users"""
-    # todo: check if user is already signed in
     db.save_user(session, user)
     if db.fetch_user_by_name(session, user.name):
         return response.generate_sign_up_response(True, user)
     return response.generate_sign_up_response(False, user)
 
 
-@app.post("/create-chat", response_model=Union[schemas.ChatRoomModel, dict])
+@app.post("/create-chat", response_model=schemas.ChatRoomModel | dict)
 async def create_chat(
-    user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
+        user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
 ):
     """Create chatroom and save to db"""
     if not db.fetch_user_by_name(session, user.name):
@@ -62,7 +71,7 @@ async def create_chat(
 
 @app.post("/connect-to-chat")
 async def connect_to_chat(
-    chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)
+        chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)
 ):
     """Connects user to chatroom"""
     user = chat.users[0]
@@ -81,10 +90,10 @@ async def connect_to_chat(
 
 @app.websocket("/{chatroom}/{username}")
 async def websocket_endpoint(
-    websocket: WebSocket,
-    username: str,
-    chatroom: str,
-    session: scoped_session = Depends(db.get_db),
+        websocket: WebSocket,
+        username: str,
+        chatroom: str,
+        session: scoped_session = Depends(db.get_db),
 ):
     await manager.connect(chatroom, username, websocket)
 

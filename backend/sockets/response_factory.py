@@ -44,4 +44,4 @@ class ResponseFactory:
 
     @staticmethod
     def generate_user_undefined_error_response(user: UserModel) -> UserUndefinedModel:
-        return UserUndefinedModel(name=user.name, status=False)
+        return UserUndefinedModel(name=user.name, password=user.password, lifetime=user.lifetime, status=False)

@@ -24,6 +24,8 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    hashed_password = Column(String)
+    lifetime = Column(Integer)
 
     chatroom = Column(String, ForeignKey("chatrooms.name"))
     messages = relationship(Message)
@@ -33,7 +35,7 @@ class User(Base):
 
 
 class ChatRoom(Base):
-    """Message Table Definition"""
+    """ChatRoom Table Definition"""
 
     __tablename__ = "chatrooms"
     id = Column(Integer, primary_key=True)

@@ -5,6 +5,8 @@ class UserModel(BaseModel):
     """User object model"""
 
     name: str
+    password: str
+    lifetime: int
 
 
 class MessageModel(BaseModel):
