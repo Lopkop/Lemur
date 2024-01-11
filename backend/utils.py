@@ -64,7 +64,3 @@ def create_and_get_chatroom(user: UserModel, name: str) -> ChatRoomModel:
         print(e.json())
     else:
         return chatroom
-
-
-def hash_password(password: str):
-    return "fakehashed" + password

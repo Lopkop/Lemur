@@ -3,7 +3,7 @@ from sqlalchemy.orm.scoping import scoped_session
 from db.database import SessionLocal
 from db.models import ChatRoom, Message, User
 from db.schemas import ChatRoomModel, MessageModel, UserModel
-from utils import hash_password
+
 
 
 class DatabaseService:
@@ -20,6 +20,7 @@ class DatabaseService:
     @staticmethod
     def save_user(session: scoped_session, user_model: UserModel) -> None:
         """Saves user object to database"""
+        from security import hash_password
         user = User(name=user_model.name, hashed_password=hash_password(user_model.password), lifetime=user_model.lifetime)
         session.add(user)
         session.commit()
