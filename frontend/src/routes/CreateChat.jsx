@@ -2,10 +2,11 @@ import React from "react";
 import "../styles/App.css";
 import { Footer } from "../components";
 
-async function connect(event) {
+async function create(event) {
+    // TODO: REWRITE THIS FUNCTION
     let username = document.getElementById("input-username").value;
     let chat = document.getElementById("chat-name").value;
-    let response = await fetch("http://localhost:8000/connect-to-chat/", {
+    let response = await fetch("http://localhost:8000/create-chat/", {
         method: 'POST',
         headers: {
         "Content-type": "application/json"
@@ -23,9 +24,10 @@ async function connect(event) {
         localStorage.user = username
         window.location.pathname = `/chat/${chat}`;
         // todo: render new page with chat
-    } else {
-        alert("Either username or chatroom name is incorrect");
     }
+//     else {
+//         alert("Either username or chatroom name is incorrect");
+//     }
 }
 
 export default function Chat() {
@@ -36,18 +38,12 @@ export default function Chat() {
             </header>
             <main>
                 <input
-                    id="input-username"
-                    className="connect-chat"
-                    type="text"
-                    placeholder="Write username"
-                />
-                <input
                     id="chat-name"
                     type="text"
                     className="connect-chat"
                     placeholder="Chatroom name"
                 />
-                <button onClick={(event) => connect(event)}>Connect</button>
+                <button onClick={(event) => create(event)}>Create</button>
             </main>
             <Footer />
         </div>

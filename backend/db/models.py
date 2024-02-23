@@ -18,22 +18,37 @@ class Message(Base):
         return f"<Message(user='{self.user}', chatroom='{self.chatroom}', text='{self.text}')>"
 
 
+class Token(Base):
+    __tablename__ = "tokens"
+    id = Column(Integer, primary_key=True)
+    token = Column(String, unique=True)
+    expires_at = Column(DateTime)
+
+    user = Column(String, ForeignKey("users.name"))
+
+    def __repr__(self):
+        return f"<Token(token='{self.token}', expires_at='{self.expires_at}', user='{self.user}')>"
+
+
 class User(Base):
     """User Table Definition"""
 
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    hashed_password = Column(String)
+    expires_at = Column(DateTime)
 
     chatroom = Column(String, ForeignKey("chatrooms.name"))
     messages = relationship(Message)
+    token = relationship(Token, uselist=False)
 
     def __repr__(self):
         return f"<User(name='{self.name}', chatroom='{self.chatroom}', messages='{self.messages}')>"
 
 
 class ChatRoom(Base):
-    """Message Table Definition"""
+    """ChatRoom Table Definition"""
 
     __tablename__ = "chatrooms"
     id = Column(Integer, primary_key=True)

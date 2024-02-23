@@ -5,6 +5,15 @@ class UserModel(BaseModel):
     """User object model"""
 
     name: str
+    password: str
+    lifetime: int
+
+
+class TokenModel(BaseModel):
+    """Token object model"""
+
+    access_token: str
+    expires_at: int
 
 
 class MessageModel(BaseModel):
@@ -23,11 +32,12 @@ class ChatRoomModel(BaseModel):
 
 
 # Response Models
+
 class SignUpResponseModel(BaseModel):
     """Sign Up Response Model"""
 
-    status: bool
-    user: UserModel
+    status: int
+    access_token: str
 
 
 class SendMessageResponseModel(BaseModel):
@@ -53,3 +63,8 @@ class ChatResponseModel(ChatRoomModel):
 
 class UserUndefinedModel(UserModel):
     status: bool
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
