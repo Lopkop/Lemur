@@ -2,7 +2,7 @@
 name = "Lemur"
 version = "0.1.0"
 description = ""
-authors = ["Lopkop <lopkophacked@protonmail.com>", "bmraubo", "Gaurav Panta"]
+authors = ["Lopkop <lopkophacked@protonmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
@@ -14,10 +14,10 @@ SQLAlchemy = "^1.4.39"
 psycopg2 = "^2.9.3"
 python-dotenv = "^0.20.0"
 fastapi = "^0.103.1"
-uvicorn = {extras = ["standard"], version = "^0.18.2"}
+uvicorn = { extras = ["standard"], version = "^0.18.2" }
 python-multipart = "^0.0.6"
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = { extras = ["cryptography"], version = "^3.3.0" }
+passlib = { extras = ["bcrypt"], version = "^1.7.4" }
 
 [tool.poetry.dev-dependencies]
 # Base tools
