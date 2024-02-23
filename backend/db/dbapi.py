@@ -21,7 +21,8 @@ class DatabaseService:
     def save_user(session: scoped_session, user_model: UserModel) -> None:
         """Saves user object to database"""
         from security import hash_password
-        user = User(name=user_model.name, hashed_password=hash_password(user_model.password), lifetime=user_model.lifetime)
+        user = User(name=user_model.name, hashed_password=hash_password(user_model.password),
+                    expires_at=user_model.lifetime)
         session.add(user)
         session.commit()
         session.refresh(user)

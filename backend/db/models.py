@@ -25,7 +25,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     hashed_password = Column(String)
-    lifetime = Column(Integer)
+    expires_at = Column(DateTime)
 
     chatroom = Column(String, ForeignKey("chatrooms.name"))
     messages = relationship(Message)

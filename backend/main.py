@@ -1,7 +1,7 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException, status
+from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException, status, Response
 from sqlalchemy.orm import scoped_session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware  # todo: later should be replaced
@@ -16,7 +16,7 @@ from security import authenticate_user, create_access_token
 
 app = FastAPI()
 db = DatabaseService()
-response = ResponseFactory()
+response_factory = ResponseFactory()
 manager = ConnectionManager()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -31,7 +31,7 @@ app.add_middleware(
 
 @app.post("/login")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                session: scoped_session = Depends(db.get_db)):
+                response: Response, session: scoped_session = Depends(db.get_db)):
     user = authenticate_user(session, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -42,26 +42,34 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 
     access_token_expires = timedelta(minutes=user.lifetime)
     access_token = create_access_token(
-        data={"sub": user.name}, expires_delta=access_token_expires
+        data={"name": user.name}, expires_delta=access_token_expires
     )
+    response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
-async def sign_up(
-        user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
-):
-    """Signs Up New Users"""
+async def sign_up(user: schemas.UserModel, response: Response,
+                  session: scoped_session = Depends(db.get_db)):
     if db.fetch_user_by_name(session, user.name):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='User with this name already exists',
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    current_time = datetime.now()
+    expires_delta = timedelta(hours=user.lifetime)
+    expiration_time = current_time + expires_delta
+    user.lifetime = expiration_time
+
     db.save_user(session, user)
-    if db.fetch_user_by_name(session, user.name):
-        return response.generate_sign_up_response(True, user)
-    return response.generate_sign_up_response(False, user)
+    access_token = create_access_token(
+        data={"name": user.name}, expires_delta=expires_delta
+    )
+
+    response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
+    return response_factory.generate_sign_up_response(True, access_token)
 
 
 @app.post("/create-chat", response_model=schemas.ChatRoomModel | dict)
@@ -70,7 +78,7 @@ async def create_chat(
 ):
     """Create chatroom and save to db"""
     if not db.fetch_user_by_name(session, user.name):
-        return response.generate_user_undefined_error_response(user)
+        return response_factory.generate_user_undefined_error_response(user)
 
     generate_id = RandomIdGenerator()
     chatroom_name = generate_id(chatroom_name=True)
@@ -78,8 +86,8 @@ async def create_chat(
     db.save_chatroom(session, chat)
 
     if db.fetch_chat_by_name(session, chatroom_name):
-        return response.generate_chat_response(True, chat)
-    return response.generate_chat_response(False, chat)
+        return response_factory.generate_chat_response(True, chat)
+    return response_factory.generate_chat_response(False, chat)
 
 
 @app.post("/connect-to-chat")
@@ -91,14 +99,14 @@ async def connect_to_chat(
     messages = db.fetch_chatroom_messages(session, chat.name)
     chat.messages = messages
     if not (user_db := db.fetch_user_by_name(session, user.name)):
-        return response.generate_user_undefined_error_response(user)
+        return response_factory.generate_user_undefined_error_response(user)
     if not db.fetch_chat_by_name(session, chat.name):
-        return response.generate_chat_response(status=False, chatroom=chat)
+        return response_factory.generate_chat_response(status=False, chatroom=chat)
     db.add_user_to_chatroom(session, chatroom_model=chat, user_model=user)
 
     if user_db in db.fetch_chat_by_name(session, chat.name).users:
-        return response.generate_chat_response(status=True, chatroom=chat)
-    return response.generate_chat_response(status=False, chatroom=chat)
+        return response_factory.generate_chat_response(status=True, chatroom=chat)
+    return response_factory.generate_chat_response(status=False, chatroom=chat)
 
 
 @app.websocket("/{chatroom}/{username}")

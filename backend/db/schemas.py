@@ -29,7 +29,7 @@ class SignUpResponseModel(BaseModel):
     """Sign Up Response Model"""
 
     status: bool
-    user: UserModel
+    access_token: str
 
 
 class SendMessageResponseModel(BaseModel):

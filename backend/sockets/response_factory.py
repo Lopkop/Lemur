@@ -13,10 +13,10 @@ from db.schemas import (
 class ResponseFactory:
     @staticmethod
     def generate_sign_up_response(
-        status: bool, user_model: UserModel
+        status: bool, access_token: str
     ) -> SignUpResponseModel:
         """Generates sign up response in JSON"""
-        response_model = SignUpResponseModel(status=status, user=user_model)
+        response_model = SignUpResponseModel(status=status, access_token=access_token)
         return response_model
 
     @staticmethod
