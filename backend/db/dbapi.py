@@ -1,9 +1,8 @@
 from sqlalchemy.orm.scoping import scoped_session
 
 from db.database import SessionLocal
-from db.models import ChatRoom, Message, User
-from db.schemas import ChatRoomModel, MessageModel, UserModel
-
+from db.models import ChatRoom, Message, User, Token
+from db.schemas import ChatRoomModel, MessageModel, UserModel, TokenModel
 
 
 class DatabaseService:
@@ -27,8 +26,16 @@ class DatabaseService:
         session.commit()
         session.refresh(user)
 
+    @staticmethod
+    def save_token(session: scoped_session, token: TokenModel, expires_at, user_name: str) -> None:
+        """Saves token object to database"""
+        token = Token(token=token, expires_at=expires_at, user=user_name)
+        session.add(token)
+        session.commit()
+        session.refresh(token)
+
     def save_chatroom(
-        self, session: scoped_session, chatroom_model: ChatRoomModel
+            self, session: scoped_session, chatroom_model: ChatRoomModel
     ) -> None:
         user = self.fetch_user_by_name(session, chatroom_model.users[0].name)
         chatroom = ChatRoom(name=chatroom_model.name, users=[user])
@@ -38,7 +45,7 @@ class DatabaseService:
 
     @staticmethod
     def save_message(
-        session: scoped_session, chatroom_name: str, message_model: MessageModel
+            session: scoped_session, chatroom_name: str, message_model: MessageModel
     ) -> None:
         """Saves a message to the chatroom"""
         message = Message(
@@ -51,10 +58,10 @@ class DatabaseService:
         session.refresh(message)
 
     def add_user_to_chatroom(
-        self,
-        session: scoped_session,
-        user_model: UserModel,
-        chatroom_model: ChatRoomModel,
+            self,
+            session: scoped_session,
+            user_model: UserModel,
+            chatroom_model: ChatRoomModel,
     ):
         user = self.fetch_user_by_name(session, user_model.name)
         chat = self.fetch_chat_by_name(session, chatroom_model.name)
@@ -80,3 +87,8 @@ class DatabaseService:
         # convert all message models to schemas so it could be used in application
         messages = [dict(user=message.user, text=message.text) for message in messages]
         return messages
+
+    @staticmethod
+    def fetch_token_by_username(session: scoped_session, name: str):
+        token = session.query(Token).filter_by(user=name).first()
+        return token

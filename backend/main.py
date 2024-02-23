@@ -39,12 +39,8 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    access_token_expires = timedelta(minutes=user.lifetime)
-    access_token = create_access_token(
-        data={"name": user.name}, expires_delta=access_token_expires
-    )
-    response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
+    access_token = db.fetch_token_by_username(session, user.name)
+    response.set_cookie(key="access_token", value=f"Bearer {access_token.token}", httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -64,12 +60,11 @@ async def sign_up(user: schemas.UserModel, response: Response,
     user.lifetime = expiration_time
 
     db.save_user(session, user)
-    access_token = create_access_token(
-        data={"name": user.name}, expires_delta=expires_delta
-    )
+    access_token = create_access_token({"name": user.name})
+    db.save_token(session, access_token, expiration_time, user.name)
 
     response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
-    return response_factory.generate_sign_up_response(True, access_token)
+    return response_factory.generate_sign_up_response(201, access_token)
 
 
 @app.post("/create-chat", response_model=schemas.ChatRoomModel | dict)

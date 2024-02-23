@@ -9,6 +9,13 @@ class UserModel(BaseModel):
     lifetime: int
 
 
+class TokenModel(BaseModel):
+    """Token object model"""
+
+    access_token: str
+    expires_at: int
+
+
 class MessageModel(BaseModel):
     """Message object model"""
 
@@ -25,10 +32,11 @@ class ChatRoomModel(BaseModel):
 
 
 # Response Models
+
 class SignUpResponseModel(BaseModel):
     """Sign Up Response Model"""
 
-    status: bool
+    status: int
     access_token: str
 
 
