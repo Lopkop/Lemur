@@ -6,6 +6,7 @@ async function create(event) {
     // TODO: REWRITE THIS FUNCTION
     let username = document.getElementById("input-username").value;
     let chat = document.getElementById("chat-name").value;
+
     let response = await fetch("http://localhost:8000/create-chat/", {
         method: 'POST',
         headers: {

@@ -92,3 +92,6 @@ class DatabaseService:
     def fetch_token_by_username(session: scoped_session, name: str):
         token = session.query(Token).filter_by(user=name).first()
         return token
+
+    def fetch_user_by_access_token(self, session, access_token):
+        ...

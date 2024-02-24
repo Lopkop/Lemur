@@ -5,6 +5,7 @@ import { Footer } from "../components";
 async function connect(event) {
     let username = document.getElementById("input-username").value; // change how i get username here
     let chat = document.getElementById("chat-name").value;
+
     let response = await fetch("http://localhost:8000/connect-to-chat/", {
         method: 'POST',
         headers: {

@@ -22,17 +22,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # can alter with time
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.post("/login")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                response: Response, session: scoped_session = Depends(db.get_db)):
-    user = authenticate_user(session, form_data.username, form_data.password)
+@app.post("/login", response_model=schemas.SignUpResponseModel)
+async def login(user: schemas.UserModel, response: Response,
+                session: scoped_session = Depends(db.get_db)):
+    user = authenticate_user(session, user.name, user.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -41,7 +41,8 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         )
     access_token = db.fetch_token_by_username(session, user.name)
     response.set_cookie(key="access_token", value=f"Bearer {access_token.token}", httponly=True)
-    return {"access_token": access_token, "token_type": "bearer"}
+    response.body = 201
+    return response_factory.generate_sign_up_response(201, access_token.token)
 
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
@@ -65,6 +66,14 @@ async def sign_up(user: schemas.UserModel, response: Response,
 
     response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
     return response_factory.generate_sign_up_response(201, access_token)
+
+
+@app.get('/get_user')
+async def get_user(access_token: str, session: scoped_session = Depends(db.get_db)):
+    user = db.fetch_user_by_access_token(session, access_token)
+    if not db.fetch_user_by_name(session, user.name):
+        return response_factory.generate_user_undefined_error_response(user)
+    return user
 
 
 @app.post("/create-chat", response_model=schemas.ChatRoomModel | dict)

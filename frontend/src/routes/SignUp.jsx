@@ -18,12 +18,11 @@ async function signup(event) {
         })
     }).then(response => response.json());
 
-
-    if (response.status === true) {
-        localStorage.user = username
-        window.location.pathname = ``; // todo: render new page
+    if (response.status === 201) {
+        localStorage.token = response.access_token;
+        window.location.pathname = `/chats`; // todo: render new page
     } else {
-        alert("Either username or chatroom name is incorrect");
+        alert("User with this username already exists");
     }
 }
 
