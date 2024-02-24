@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
-from typing import Annotated
 
 from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException, status, Response
 from sqlalchemy.orm import scoped_session
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware  # todo: later should be replaced
 
 from sockets.connection_manager import ConnectionManager
