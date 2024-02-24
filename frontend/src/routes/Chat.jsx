@@ -3,7 +3,7 @@ import "../styles/App.css";
 import { Footer } from "../components";
 
 async function send_message(event) {
-    // save message and send it to other user
+    // save message and send it to other users
 }
 
 export default function Chat() {

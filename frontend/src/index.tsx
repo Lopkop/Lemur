@@ -11,6 +11,7 @@ import SignUp from './routes/SignUp'
 import ErrorPage from "./error-page";
 import Chat from "./routes/Chat"
 import Root from './routes/Root'
+import Root2 from './routes/Root2'
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,11 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/chats",
+    element: <Root2 />,
     errorElement: <ErrorPage />,
   },
   {

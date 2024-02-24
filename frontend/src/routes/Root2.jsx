@@ -4,11 +4,11 @@ import { Footer } from "../components";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function redirect_to_signup() {
-       window.location.pathname = `/signup`;
+function redirect_to_create_chat() {
+       window.location.pathname = `/create_chat`;
 }
-function redirect_to_login() {
-       window.location.pathname = `/login`;
+function redirect_to_connect_chat() {
+       window.location.pathname = `/connect_chat`;
 }
 
 export default function Root() {
@@ -20,11 +20,11 @@ export default function Root() {
             <main>
                 <span className="some-text">The world is dual, so you have only two choices.</span>
                 <div className="auth-buttons-container">
-                  <button onClick={redirect_to_login} variant="secondary" className="login-button">
-                    Login
+                  <button onClick={redirect_to_create_chat} variant="secondary" className="login-button">
+                    Create chat
                   </button>
-                  <button onClick={redirect_to_signup} variant="secondary" className="signup-button">
-                    Sign Up
+                  <button onClick={redirect_to_connect_chat} variant="secondary" className="signup-button">
+                    Connect to chat
                   </button>
                 </div>
             </main>

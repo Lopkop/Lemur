@@ -42,7 +42,7 @@ async def login(user: schemas.UserModel, response: Response,
     access_token = db.fetch_token_by_username(session, user.name)
     response.set_cookie(key="access_token", value=f"Bearer {access_token.token}", httponly=True)
     response.body = 201
-    return response_factory.generate_sign_up_response(201,  access_token.token)
+    return response_factory.generate_sign_up_response(201, access_token.token)
 
 
 @app.post("/sign-up", response_model=schemas.SignUpResponseModel)
@@ -66,6 +66,14 @@ async def sign_up(user: schemas.UserModel, response: Response,
 
     response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
     return response_factory.generate_sign_up_response(201, access_token)
+
+
+@app.get('/get_user')
+async def get_user(access_token: str, session: scoped_session = Depends(db.get_db)):
+    user = db.fetch_user_by_access_token(session, access_token)
+    if not db.fetch_user_by_name(session, user.name):
+        return response_factory.generate_user_undefined_error_response(user)
+    return user
 
 
 @app.post("/create-chat", response_model=schemas.ChatRoomModel | dict)

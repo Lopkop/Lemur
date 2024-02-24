@@ -21,7 +21,7 @@ async function login(event) {
 
     if (response.status === 201) {
         localStorage.token = response.access_token;
-        window.location.pathname = ``; // todo: render new page
+        window.location.pathname = `/chats`; // todo: render new page
     } else {
         alert("Either username or password is incorrect");
     }
