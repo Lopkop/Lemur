@@ -72,7 +72,7 @@ function Signup_render() {
 }
 
 
-export default function Login() {
+export default function SignUp() {
      return (
         <section>
             {Signup_render()}
