@@ -22,4 +22,23 @@ async function user_is_logged_in() {
     }
 }
 
-export {Footer, user_is_logged_in, get_user}
+async function createChat(event) {
+    let user = await get_user()
+
+    let response = await fetch("http://localhost:8000/create-chat?username=" + `${user.name}`, {
+        method: 'POST',
+        headers: {
+        "Content-type": "application/json"
+        }
+    }).then(response => response.json());
+    console.log(response)
+
+
+    if (response.status === 201) {
+        localStorage.chat = response.chat
+        window.location.pathname = `/chat/${response.name}`;
+    }
+}
+
+
+export {Footer, user_is_logged_in, get_user, createChat}
