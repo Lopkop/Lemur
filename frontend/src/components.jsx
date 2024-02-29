@@ -1,4 +1,4 @@
-function Footer(props: any) {
+function Footer() {
 	return <footer>Created by <a href="https://github.com/Lopkop">Lopkop</a></footer>
 }
 
