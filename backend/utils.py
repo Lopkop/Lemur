@@ -56,10 +56,10 @@ def create_and_get_message(username: str, text: str) -> MessageModel:
         return message
 
 
-def create_and_get_chatroom(user: UserModel, name: str) -> ChatRoomModel:
+def create_and_get_chatroom(username: str, name: str) -> ChatRoomModel:
     """Creates Chatroom object and returns it"""
     try:
-        chatroom = ChatRoomModel(users=[user], name=name, messages=[])
+        chatroom = ChatRoomModel(users=[username], name=name, messages=[])
     except ValidationError as e:
         print(e.json())
     else:

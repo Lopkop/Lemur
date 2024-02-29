@@ -36,10 +36,8 @@ class DatabaseService:
         session.commit()
         session.refresh(token)
 
-    def save_chatroom(
-            self, session: scoped_session, chatroom_model: ChatRoomModel
-    ) -> None:
-        user = self.fetch_user_by_name(session, chatroom_model.users[0].name)
+    def save_chatroom(self, session: scoped_session, chatroom_model: ChatRoomModel) -> None:
+        user = self.fetch_user_by_name(session, chatroom_model.users[0])
         chatroom = ChatRoom(name=chatroom_model.name, users=[user])
         session.add(chatroom)
         session.commit()

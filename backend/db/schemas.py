@@ -28,7 +28,7 @@ class ChatRoomModel(BaseModel):
 
     name: str
     messages: list[MessageModel]
-    users: list[UserModel]
+    users: list[str]
 
 
 # Response Models
@@ -58,11 +58,12 @@ class GetMessagesResponseModel(BaseModel):
 class ChatResponseModel(ChatRoomModel):
     """Chatroom Response Model"""
 
-    status: bool
+    status: int
 
 
-class UserUndefinedModel(UserModel):
-    status: bool
+class UserUndefinedModel(BaseModel):
+    name: str
+    status: int
 
 
 class Token(BaseModel):
