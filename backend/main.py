@@ -69,7 +69,9 @@ async def login(user: schemas.UserModel, response: Response,
 
 @app.get('/get_user/{token}')
 async def get_user(token: str, session: scoped_session = Depends(db.get_db)):
-    return db.fetch_user_by_access_token(session, token)
+    user = db.fetch_user_by_access_token(session, token)
+    user.hashed_password = None
+    return user
 
 
 @app.post('/create-chat', response_model=schemas.ChatRoomModel | dict)
