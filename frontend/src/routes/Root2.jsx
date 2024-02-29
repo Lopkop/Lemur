@@ -1,7 +1,7 @@
 import { React, useEffect, useState }  from "react";
 
 import "../styles/App.css";
-import { Footer, user_is_logged_in } from "../components";
+import { Footer, user_is_logged_in, createChat } from "../components";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -12,8 +12,9 @@ function redirect_to_connect_chat() {
        window.location.pathname = `/connect_chat`;
 }
 
+
 function Root2_render() {
-    const [user, setUser] = useState();
+    let [user, setUser] = useState();
     useEffect(() => {
         async function fetchData() {
             const logged_in = await user_is_logged_in();
@@ -21,9 +22,7 @@ function Root2_render() {
             }
             fetchData();
         }, [])
-    if (!user) {
-        window.location.pathname = `/`;
-    } else {
+    if (user) {
         return (
             <div className="App">
                 <header>
@@ -32,7 +31,7 @@ function Root2_render() {
                 <main>
                     <span className="some-text">The world is dual, so you have only two choices.</span>
                     <div className="auth-buttons-container">
-                      <button onClick={redirect_to_create_chat} variant="secondary" className="login-button">
+                      <button onClick={(event) => createChat(event)} variant="secondary" className="login-button">
                         Create chat
                       </button>
                       <button onClick={redirect_to_connect_chat} variant="secondary" className="signup-button">
@@ -44,6 +43,12 @@ function Root2_render() {
             </div>
         );
     }
+    // BUG: If i uncomment this code and user is logged in
+    // you will be always (strangely) redirected to "/" and then from "/"
+    // you will be redirected back here and so on ...
+//     else {
+//         window.location.pathname = `/`;
+//     }
 }
 
 export default function Root2() {

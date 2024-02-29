@@ -74,29 +74,22 @@ async def get_user(token: str, session: scoped_session = Depends(db.get_db)):
     return user
 
 
-@app.post('/create-chat', response_model=schemas.ChatRoomModel | dict)
-async def create_chat(
-        user: schemas.UserModel, session: scoped_session = Depends(db.get_db)
-):
+@app.post('/create-chat')
+async def create_chat(username, session: scoped_session = Depends(db.get_db)):
     """Create chatroom and save to db"""
-    if not db.fetch_user_by_name(session, user.name):
-        return response_factory.generate_user_undefined_error_response(user)
+    if not db.fetch_user_by_name(session, username):
+        return response_factory.generate_user_undefined_error_response(username)
 
     generate_id = RandomIdGenerator()
     chatroom_name = generate_id(chatroom_name=True)
-    chat = create_and_get_chatroom(user, name=chatroom_name)
+    chat = create_and_get_chatroom(username, name=chatroom_name)
     db.save_chatroom(session, chat)
 
-    if db.fetch_chat_by_name(session, chatroom_name):
-        return response_factory.generate_chat_response(True, chat)
-    return response_factory.generate_chat_response(False, chat)
+    return response_factory.generate_chat_response(201, chat)
 
 
 @app.post('/connect-to-chat')
-async def connect_to_chat(
-        chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)
-):
-    """Connects user to chatroom"""
+async def connect_to_chat(chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)):
     user = chat.users[0]
     messages = db.fetch_chatroom_messages(session, chat.name)
     chat.messages = messages
