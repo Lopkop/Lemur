@@ -69,3 +69,8 @@ class UserUndefinedModel(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class ChatRequest(BaseModel):
+    chatname: str
+    username: str

@@ -33,8 +33,7 @@ class ResponseFactory:
 
     @staticmethod
     def generate_chat_response(status: int, chatroom: ChatRoomModel):
-        response_model = ChatResponseModel(**chatroom.dict(), status=status)
-        return response_model
+        return {"status": status, "chatroom": chatroom}
 
     @staticmethod
     def generate_user_undefined_error_response(username: str) -> UserUndefinedModel:
