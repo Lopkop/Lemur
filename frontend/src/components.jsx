@@ -10,6 +10,9 @@ async function get_user() {
     const user = await fetch("http://localhost:8000/get_user/" + `${token}`, {
         method: 'GET',
         }).then(response => response.json());
+    if (user.status == 400) {
+        return false;
+    }
     return user
 }
 
