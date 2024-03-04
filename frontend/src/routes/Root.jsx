@@ -14,7 +14,7 @@ function redirect_to_login() {
 }
 
 function Root_render() {
-    const [user, setUser] = useState();
+     let [user, setUser] = useState();
     useEffect(() => {
         async function fetchData() {
             const logged_in = await user_is_logged_in();

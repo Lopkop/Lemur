@@ -1,10 +1,10 @@
 import React from "react";
 import "../styles/App.css";
-import { Footer } from "../components";
+import { Footer, get_user } from "../components";
 
 async function connect(event) {
-    let username = document.getElementById("input-username").value; // change how i get username here
     let chat = document.getElementById("chat-name").value;
+    let user = await get_user()
 
     let response = await fetch("http://localhost:8000/connect-to-chat/", {
         method: 'POST',
@@ -12,20 +12,16 @@ async function connect(event) {
         "Content-type": "application/json"
         },
         body: JSON.stringify({
-        "name": `${chat}`,
-        "messages": [],
-        "users": [{"name": `${username}`}]
+        "chatname": `${chat}`,
+        "username": `${user.name}`
         })
     }).then(response => response.json());
-
-
-    if (response.status === true) {
+    console.log(response)
+    if (response.status == 200) {
         localStorage.chat = chat
-        localStorage.user = username
         window.location.pathname = `/chat/${chat}`;
-        // todo: render new page with chat
     } else {
-        alert("Either username or chatroom name is incorrect");
+        alert("Chatroom name is incorrect");
     }
 }
 
