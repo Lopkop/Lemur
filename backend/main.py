@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware  # todo: later should be repl
 from sockets.connection_manager import ConnectionManager
 from db.dbapi import DatabaseService
 from db import schemas
-from db.schemas import MessageModel
+from db.schemas import MessageModel, ChatRequest
 from sockets.response_factory import ResponseFactory
 from utils import RandomIdGenerator, create_and_get_chatroom
 from security import authenticate_user, create_access_token
@@ -70,6 +70,8 @@ async def login(user: schemas.UserModel, response: Response,
 @app.get('/get_user/{token}')
 async def get_user(token: str, session: scoped_session = Depends(db.get_db)):
     user = db.fetch_user_by_access_token(session, token)
+    if user is None:
+        return {"status": 400}
     user.hashed_password = None
     return user
 
@@ -89,19 +91,13 @@ async def create_chat(username, session: scoped_session = Depends(db.get_db)):
 
 
 @app.post('/connect-to-chat')
-async def connect_to_chat(chat: schemas.ChatRoomModel, session: scoped_session = Depends(db.get_db)):
-    user = chat.users[0]
-    messages = db.fetch_chatroom_messages(session, chat.name)
-    chat.messages = messages
-    if not (user_db := db.fetch_user_by_name(session, user.name)):
-        return response_factory.generate_user_undefined_error_response(user)
-    if not db.fetch_chat_by_name(session, chat.name):
-        return response_factory.generate_chat_response(status=False, chatroom=chat)
-    db.add_user_to_chatroom(session, chatroom_model=chat, user_model=user)
+async def connect_to_chat(req: ChatRequest, session: scoped_session = Depends(db.get_db)):
+    user = db.fetch_user_by_name(session, req.username)
+    if not (chat := db.fetch_chat_by_name(session, req.chatname)):
+        return {"status": 400, "chatname": req.chatname}
 
-    if user_db in db.fetch_chat_by_name(session, chat.name).users:
-        return response_factory.generate_chat_response(status=True, chatroom=chat)
-    return response_factory.generate_chat_response(status=False, chatroom=chat)
+    db.add_user_to_chatroom(session, chatroom_model=chat, user_model=user)
+    return response_factory.generate_chat_response(status=200, chatroom=chat)
 
 
 @app.websocket('/{chatroom}/{username}')
