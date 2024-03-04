@@ -34,12 +34,10 @@ async function createChat(event) {
         "Content-type": "application/json"
         }
     }).then(response => response.json());
-    console.log(response)
-
 
     if (response.status === 201) {
-        localStorage.chat = response.chat
-        window.location.pathname = `/chat/${response.name}`;
+        localStorage.chat = response.chatroom.name
+        window.location.pathname = `/chat/${response.chatroom.name}`;
     }
 }
 
