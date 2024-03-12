@@ -90,6 +90,11 @@ async def create_chat(username, session: scoped_session = Depends(db.get_db)):
     return response_factory.generate_chat_response(201, chat)
 
 
+@app.get('/get-messages')
+def get_messages(chatname, session: scoped_session = Depends(db.get_db)):
+    return db.fetch_chatroom_messages(session, chatname)
+
+
 @app.post('/connect-to-chat')
 async def connect_to_chat(req: ChatRequest, session: scoped_session = Depends(db.get_db)):
     user = db.fetch_user_by_name(session, req.username)
@@ -105,8 +110,7 @@ async def websocket_endpoint(
         websocket: WebSocket,
         username: str,
         chatroom: str,
-        session: scoped_session = Depends(db.get_db),
-):
+        session: scoped_session = Depends(db.get_db)):
     await manager.connect(chatroom, username, websocket)
 
     try:

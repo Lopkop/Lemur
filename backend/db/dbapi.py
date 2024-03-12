@@ -84,7 +84,7 @@ class DatabaseService:
     def fetch_chatroom_messages(session: scoped_session, chatroom_name: str):
         """Fetch all messages in a chat room"""
         messages = session.query(Message).filter_by(chatroom=chatroom_name).all()
-        # convert all message models to schemas so it could be used in application
+        # convert all message models to schemas, so it could be used in application
         messages = [dict(user=message.user, text=message.text) for message in messages]
         return messages
 
