@@ -1,6 +1,6 @@
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from config import SECRET_KEY
+from config import settings
 
 from db.dbapi import DatabaseService
 
@@ -28,11 +28,11 @@ def hash_password(password):
 
 
 def create_access_token(data: dict):
-    encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(data, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
 def decode_access_token(token: str):
-    decoded = jwt.decode(token, key=SECRET_KEY, algorithms=ALGORITHM)
+    decoded = jwt.decode(token, key=settings.SECRET_KEY, algorithms=ALGORITHM)
     print(decoded)
     return decoded

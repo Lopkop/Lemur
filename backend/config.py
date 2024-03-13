@@ -1,6 +1,11 @@
-from dotenv import dotenv_values
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-config = dotenv_values(".env")
 
-DATABASE_URL = config.get("DATABASE_URL")
-SECRET_KEY = config.get('SECRET_KEY')
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=('.env', '.env.prod'), env_file_encoding='utf-8')
+
+    DATABASE_URL: str
+    SECRET_KEY: str
+
+
+settings = Settings()

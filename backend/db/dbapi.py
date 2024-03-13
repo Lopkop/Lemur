@@ -4,7 +4,7 @@ from jose import jwt
 from db.database import SessionLocal
 from db.models import ChatRoom, Message, User, Token
 from db.schemas import ChatRoomModel, MessageModel, UserModel, TokenModel
-from config import SECRET_KEY
+from config import settings
 
 
 class DatabaseService:
@@ -94,5 +94,5 @@ class DatabaseService:
         return token
 
     def fetch_user_by_access_token(self, session, access_token):
-        decoded = jwt.decode(access_token, SECRET_KEY)
+        decoded = jwt.decode(access_token, settings.SECRET_KEY)
         return self.fetch_user_by_name(session, decoded['name'])
