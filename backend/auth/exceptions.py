@@ -1,0 +1,6 @@
+class LoginFailed(Exception):
+    ...
+
+
+class UserExpired(Exception):
+    ...
