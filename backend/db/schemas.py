@@ -33,13 +33,6 @@ class ChatRoomModel(BaseModel):
 
 # Response Models
 
-class SignUpResponseModel(BaseModel):
-    """Sign Up Response Model"""
-
-    status: int
-    access_token: str
-
-
 class SendMessageResponseModel(BaseModel):
     """Send Message Response Model"""
 
