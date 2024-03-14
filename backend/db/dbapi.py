@@ -21,7 +21,7 @@ class DatabaseService:
     @staticmethod
     def save_user(session: scoped_session, user_model: UserModel) -> None:
         """Saves user object to database"""
-        from security import hash_password
+        from auth.security import hash_password
         user = User(name=user_model.name, hashed_password=hash_password(user_model.password),
                     expires_at=user_model.lifetime)
         session.add(user)
@@ -96,3 +96,8 @@ class DatabaseService:
     def fetch_user_by_access_token(self, session, access_token):
         decoded = jwt.decode(access_token, settings.SECRET_KEY)
         return self.fetch_user_by_name(session, decoded['name'])
+
+    def remove_user(self, session: scoped_session, user):
+        user = self.fetch_user_by_name(session, user.name)
+        session.delete(user)  # automatically removes token
+        session.commit()
