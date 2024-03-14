@@ -5,10 +5,11 @@ from fastapi.middleware.cors import CORSMiddleware  # todo: later should be repl
 
 from sockets.connection_manager import ConnectionManager
 from db.dbapi import DatabaseService
-from db.schemas import MessageModel, ChatRequest
+from db.schemas import MessageModel
 from sockets.response_factory import ResponseFactory
-from utils import RandomIdGenerator, create_and_get_chatroom
+
 from auth.api import auth_router
+from chatroom.api import chat_router
 
 app = FastAPI()
 db = DatabaseService()
@@ -25,36 +26,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
-
-
-@app.post('/create-chat')
-async def create_chat(username, session: scoped_session = Depends(db.get_db)):
-    """Create chatroom and save to db"""
-    if not db.fetch_user_by_name(session, username):
-        return response_factory.generate_user_undefined_error_response(username)
-
-    generate_id = RandomIdGenerator()
-    chatroom_name = generate_id(chatroom_name=True)
-    chat = create_and_get_chatroom(username, name=chatroom_name)
-    db.save_chatroom(session, chat)
-
-    return response_factory.generate_chat_response(201, chat)
-
-
-@app.get('/get-messages')
-def get_messages(chatname, session: scoped_session = Depends(db.get_db)):
-    return db.fetch_chatroom_messages(session, chatname)
-
-
-@app.post('/connect-to-chat')
-async def connect_to_chat(req: ChatRequest, session: scoped_session = Depends(db.get_db)):
-    user = db.fetch_user_by_name(session, req.username)
-    if not (chat := db.fetch_chat_by_name(session, req.chatname)):
-        return {"status": 400, "chatname": req.chatname}
-    if not user:
-        return {"status": 400, "chatname": req.chatname}
-    db.add_user_to_chatroom(session, chatroom_model=chat, user_model=user)
-    return response_factory.generate_chat_response(status=200, chatroom=chat)
+app.include_router(chat_router)
 
 
 @app.websocket('/{chatroom}/{username}')
