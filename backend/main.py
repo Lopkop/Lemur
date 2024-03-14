@@ -1,17 +1,14 @@
-from datetime import datetime, timedelta
-
-from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect, HTTPException, status, Response
+from fastapi import FastAPI, WebSocket, Depends, WebSocketDisconnect
 from sqlalchemy.orm import scoped_session
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware  # todo: later should be replaced
 
 from sockets.connection_manager import ConnectionManager
 from db.dbapi import DatabaseService
-from db import schemas
 from db.schemas import MessageModel, ChatRequest
 from sockets.response_factory import ResponseFactory
 from utils import RandomIdGenerator, create_and_get_chatroom
-from security import authenticate_user, create_access_token
+from auth.api import auth_router
 
 app = FastAPI()
 db = DatabaseService()
@@ -27,53 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.post('/sign-up', response_model=schemas.SignUpResponseModel)
-async def sign_up(user: schemas.UserModel, response: Response,
-                  session: scoped_session = Depends(db.get_db)):
-    if db.fetch_user_by_name(session, user.name):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='User with this name already exists',
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    current_time = datetime.now()
-    expires_delta = timedelta(hours=user.lifetime)
-    expiration_time = current_time + expires_delta
-    user.lifetime = expiration_time
-
-    db.save_user(session, user)
-    access_token = create_access_token({"name": user.name})
-    db.save_token(session, access_token, expiration_time, user.name)
-
-    response.set_cookie(key="access_token", value=f"Bearer {access_token[0]}", httponly=True)
-    return response_factory.generate_sign_up_response(201, access_token)
-
-
-@app.post('/login', response_model=schemas.SignUpResponseModel)
-async def login(user: schemas.UserModel, response: Response,
-                session: scoped_session = Depends(db.get_db)):
-    user = authenticate_user(session, user.name, user.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token = db.fetch_token_by_username(session, user.name)
-    response.set_cookie(key="access_token", value=f"Bearer {access_token.token}", httponly=True)
-    response.body = 201
-    return response_factory.generate_sign_up_response(201, access_token.token)
-
-
-@app.get('/get_user/{token}')
-async def get_user(token: str, session: scoped_session = Depends(db.get_db)):
-    user = db.fetch_user_by_access_token(session, token)
-    if user is None:
-        return {"status": 400}
-    user.hashed_password = None
-    return user
+app.include_router(auth_router)
 
 
 @app.post('/create-chat')
@@ -100,7 +51,8 @@ async def connect_to_chat(req: ChatRequest, session: scoped_session = Depends(db
     user = db.fetch_user_by_name(session, req.username)
     if not (chat := db.fetch_chat_by_name(session, req.chatname)):
         return {"status": 400, "chatname": req.chatname}
-
+    if not user:
+        return {"status": 400, "chatname": req.chatname}
     db.add_user_to_chatroom(session, chatroom_model=chat, user_model=user)
     return response_factory.generate_chat_response(status=200, chatroom=chat)
 
