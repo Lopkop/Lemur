@@ -3,20 +3,11 @@ from db.schemas import (
     GetMessagesResponseModel,
     MessageModel,
     SendMessageResponseModel,
-    SignUpResponseModel,
-    UserModel,
     UserUndefinedModel,
-    ChatResponseModel,
 )
 
 
 class ResponseFactory:
-    @staticmethod
-    def generate_sign_up_response(status: int, access_token: str) -> SignUpResponseModel:
-        """Generates sign up response in JSON"""
-        response_model = SignUpResponseModel(status=status, access_token=access_token)
-        return response_model
-
     @staticmethod
     def generate_send_message_response(status: bool, message: MessageModel) -> SendMessageResponseModel:
         """Generates send_message response in JSON"""
