@@ -1,12 +1,12 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from fastapi_utils.api_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=('.env', '.env.prod'), env_file_encoding='utf-8')
-
     DATABASE_URL: str
     SECRET_KEY: str
     ALGORITHM: str
+    DEV: str
+    LOG_LEVEL: str
 
 
-settings = Settings()
+settings = Settings(_env_file='.env')
