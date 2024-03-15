@@ -29,16 +29,3 @@ class ChatRoomModel(BaseModel):
     name: str
     messages: list[MessageModel]
     users: list[str]
-
-
-# Response Models
-
-
-class UserUndefinedModel(BaseModel):
-    name: str
-    status: int
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
