@@ -1,7 +1,11 @@
+from functools import lru_cache
+from typing import Iterator
+
+from fastapi_utils.session import FastAPISessionMaker
+from sqlalchemy.orm import Session
 from sqlalchemy.orm.scoping import scoped_session
 from jose import jwt
 
-from db.database import SessionLocal
 from db.models import ChatRoom, Message, User, Token
 from db.schemas import ChatRoomModel, MessageModel, UserModel, TokenModel
 from config import settings
@@ -10,13 +14,14 @@ from config import settings
 class DatabaseService:
     """DB API service"""
 
+    def get_db(self) -> Iterator[Session]:
+        """FastAPI dependency that provides a sqlalchemy session"""
+        yield from self._get_fastapi_sessionmaker().get_db()
+
     @staticmethod
-    def get_db():
-        session = SessionLocal()
-        try:
-            yield session
-        finally:
-            session.close()
+    @lru_cache()
+    def _get_fastapi_sessionmaker() -> FastAPISessionMaker:
+        return FastAPISessionMaker(settings.DATABASE_URL)
 
     @staticmethod
     def save_user(session: scoped_session, user_model: UserModel) -> None:
