@@ -1,5 +1,6 @@
 from sqlalchemy.orm import scoped_session
 from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect
+from fastapi_utils.cbv import cbv
 
 from db.dbapi import DatabaseService
 from db.schemas import MessageModel
@@ -10,22 +11,26 @@ manager = ConnectionManager()
 db = DatabaseService()
 
 
-@socket_router.websocket('/{chatroom}/{username}')
-async def websocket_endpoint(
-        websocket: WebSocket,
-        username: str,
-        chatroom: str,
-        session: scoped_session = Depends(db.get_db)):
-    await manager.connect(chatroom, username, websocket)
+@cbv(socket_router)
+class WebSocketCBV:
+    session: scoped_session = Depends(db.get_db)
 
-    try:
-        while True:
-            text = await websocket.receive_text()
-            message = MessageModel(text=text, user=username)
-            db.save_message(session, chatroom, message)
+    @socket_router.websocket('/{chatroom}/{username}')
+    async def websocket_endpoint(
+            self,
+            websocket: WebSocket,
+            username: str,
+            chatroom: str):
+        await manager.connect(chatroom, username, websocket)
 
-            await manager.send_message(chatroom, message.json())
-            print(f'{username} sent "{text}" to {chatroom}')  # need to log, not print
+        try:
+            while True:
+                text = await websocket.receive_text()
+                message = MessageModel(text=text, user=username)
+                db.save_message(self.session, chatroom, message)
 
-    except WebSocketDisconnect:
-        manager.disconnect(chatroom, username)
+                await manager.send_message(chatroom, message.json())
+                print(f'{username} sent "{text}" to {chatroom}')  # need to log, not print
+
+        except WebSocketDisconnect:
+            manager.disconnect(chatroom, username)
