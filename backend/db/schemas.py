@@ -33,26 +33,6 @@ class ChatRoomModel(BaseModel):
 
 # Response Models
 
-class SendMessageResponseModel(BaseModel):
-    """Send Message Response Model"""
-
-    status: bool
-    message: MessageModel
-
-
-class GetMessagesResponseModel(BaseModel):
-    """Get Messages Response Model"""
-
-    status: bool
-    name: str
-    messages: list[MessageModel]
-
-
-class ChatResponseModel(ChatRoomModel):
-    """Chatroom Response Model"""
-
-    status: int
-
 
 class UserUndefinedModel(BaseModel):
     name: str
@@ -62,8 +42,3 @@ class UserUndefinedModel(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-class ChatRequest(BaseModel):
-    chatname: str
-    username: str
