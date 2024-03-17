@@ -1,12 +1,13 @@
 from sqlalchemy.orm import scoped_session
-from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect
+from fastapi import WebSocket, Depends, WebSocketDisconnect
 from fastapi_utils.cbv import cbv
+from fastapi_utils.inferring_router import InferringRouter
 
 from db.dbapi import DatabaseService
 from db.schemas import MessageModel
 from sockets.connection_manager import ConnectionManager
 
-socket_router = APIRouter()
+socket_router = InferringRouter()
 manager = ConnectionManager()
 db = DatabaseService()
 

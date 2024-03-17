@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status
+from fastapi_utils.inferring_router import InferringRouter
 from sqlalchemy.orm import scoped_session
 from fastapi_utils.cbv import cbv
 
@@ -7,7 +8,7 @@ from chatroom.schemas import ChatRequest
 from db.dbapi import DatabaseService
 
 db = DatabaseService()
-chat_router = APIRouter()
+chat_router = InferringRouter()
 
 
 @cbv(chat_router)

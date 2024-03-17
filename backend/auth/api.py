@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 from sqlalchemy.orm import scoped_session
 from fastapi_utils.cbv import cbv
+from fastapi_utils.inferring_router import InferringRouter
 
 import auth.schemas as schemas
 import db.schemas as db_schemas
@@ -10,7 +11,7 @@ from auth.security import authenticate_user, create_access_token, token_expired_
 from auth.exceptions import LoginFailed, UserExpired
 
 db = DatabaseService()
-auth_router = APIRouter()
+auth_router = InferringRouter()
 
 
 @cbv(auth_router)
