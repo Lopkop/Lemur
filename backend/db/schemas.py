@@ -5,7 +5,7 @@ class UserModel(BaseModel):
     """User object model"""
 
     name: str
-    password: str
+    password: str | None
     lifetime: int
 
 

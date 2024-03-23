@@ -28,7 +28,7 @@ class DatabaseService:
         """Saves user object to database"""
         from auth.security import hash_password
         user = User(name=user_model.name, hashed_password=hash_password(user_model.password),
-                    expires_at=user_model.lifetime)
+                    lifetime=user_model.lifetime)
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -78,6 +78,7 @@ class DatabaseService:
     def fetch_user_by_name(session: scoped_session, username: str) -> User:
         """Fetch User by username"""
         user = session.query(User).filter_by(name=username).first()
+        print(user, 'AAAA')
         return user
 
     @staticmethod
