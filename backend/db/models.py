@@ -37,11 +37,11 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     hashed_password = Column(String)
-    expires_at = Column(DateTime)
+    lifetime = Column(DateTime)
 
     chatroom = Column(String, ForeignKey("chatrooms.name"))
-    messages = relationship(Message)
-    token = relationship(Token, uselist=False)
+    messages = relationship(Message, cascade="all,delete", backref="parent")
+    token = relationship(Token, uselist=False, cascade="all,delete", backref="parent")
 
     def __repr__(self):
         return f"<User(name='{self.name}', chatroom='{self.chatroom}', messages='{self.messages}')>"
@@ -54,8 +54,8 @@ class ChatRoom(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
 
-    users = relationship(User)
-    messages = relationship(Message)
+    users = relationship(User, cascade="all,delete")
+    messages = relationship(Message, cascade="all,delete")
 
     def __repr__(self):
         return f"<ChatRoom(chatroom_name='{self.name}', users='{self.users}', messages='{self.messages}')>"
