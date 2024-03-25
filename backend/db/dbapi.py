@@ -6,9 +6,16 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.scoping import scoped_session
 from jose import jwt
 
-from db.models import ChatRoom, Message, User, Token
+from db.models import ChatRoom, Message, User, Token, UserChatRoom
 from db.schemas import ChatRoomModel, MessageModel, UserModel, TokenModel
 from config import settings
+
+
+def save_chatroom(session: scoped_session, chatroom_model: ChatRoomModel, username: str) -> None:
+    chatroom = ChatRoom(name=chatroom_model.name)
+    session.add(chatroom)
+    session.commit()
+    session.refresh(chatroom)
 
 
 class DatabaseService:
@@ -41,9 +48,9 @@ class DatabaseService:
         session.commit()
         session.refresh(token)
 
-    def save_chatroom(self, session: scoped_session, chatroom_model: ChatRoomModel) -> None:
-        user = self.fetch_user_by_name(session, chatroom_model.users[0])
-        chatroom = ChatRoom(name=chatroom_model.name, users=[user])
+    @staticmethod
+    def save_chatroom(session: scoped_session, chatroom_model: ChatRoomModel) -> None:
+        chatroom = ChatRoom(name=chatroom_model.name)
         session.add(chatroom)
         session.commit()
         session.refresh(chatroom)
@@ -62,23 +69,21 @@ class DatabaseService:
         session.commit()
         session.refresh(message)
 
+    @staticmethod
     def add_user_to_chatroom(
-            self,
             session: scoped_session,
-            user_model: UserModel,
-            chatroom_model: ChatRoomModel,
+            username: str,
+            chatroom_name: str
     ):
-        user = self.fetch_user_by_name(session, user_model.name)
-        chat = self.fetch_chat_by_name(session, chatroom_model.name)
-        user.chatroom = chat.name
-        chat.users.append(user)
+        user_chatroom = UserChatRoom(chatroom_name=chatroom_name, user=username)
+        session.add(user_chatroom)
         session.commit()
+        session.refresh(user_chatroom)
 
     @staticmethod
     def fetch_user_by_name(session: scoped_session, username: str) -> User:
         """Fetch User by username"""
         user = session.query(User).filter_by(name=username).first()
-        print(user, 'AAAA')
         return user
 
     @staticmethod
@@ -91,7 +96,7 @@ class DatabaseService:
         """Fetch all messages in a chat room"""
         messages = session.query(Message).filter_by(chatroom=chatroom_name).all()
         # convert all message models to schemas, so it could be used in application
-        messages = [dict(user=message.user, text=message.text) for message in messages]
+        messages = [dict(user=message.user, text=message.text, created_at=message.created_at) for message in messages]
         return messages
 
     @staticmethod
@@ -105,5 +110,5 @@ class DatabaseService:
 
     def remove_user(self, session: scoped_session, user):
         user = self.fetch_user_by_name(session, user.name)
-        session.delete(user)  # automatically removes token
+        session.delete(user)  # automatically removes token associated with the user
         session.commit()
