@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, status, Response, Depends
+from fastapi import HTTPException, status, Response, Depends
 from sqlalchemy.orm import scoped_session
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
