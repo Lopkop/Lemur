@@ -29,6 +29,7 @@ class ChatCBV:
         chatroom_name = generate_id(chatroom_name=True)
         chat = create_and_get_chatroom(username, name=chatroom_name)
         db.save_chatroom(self.session, chat)
+        db.add_user_to_chatroom(self.session, username, chat.name)
 
         return {"status": 201, "chatroom": chat}
 
@@ -39,9 +40,9 @@ class ChatCBV:
             return {"status": 400, "chatname": req.chatname}
         if not user:
             return {"status": 400, "chatname": req.chatname}
-        db.add_user_to_chatroom(self.session, chatroom_model=chat, user_model=user)
-        return {"status": 200, "chatname": chat}
+        db.add_user_to_chatroom(self.session, chatroom_name=chat.name, username=user.name)
+        return {"status": 200, "chatname": chat.name}
 
     @chat_router.get('/get-messages')
-    def get_messages(self, chatname):
-        return db.fetch_chatroom_messages(self.session, chatname)
+    def get_messages(self, chatroom_name):
+        return db.fetch_chatroom_messages(self.session, chatroom_name)
