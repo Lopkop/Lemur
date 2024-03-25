@@ -27,5 +27,8 @@ class ChatRoomModel(BaseModel):
     """ChatRoom object model"""
 
     name: str
-    messages: list[MessageModel]
-    users: list[str]
+
+
+class UserChatRoom(BaseModel):
+    chatroom_name: str
+    user: str
