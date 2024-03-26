@@ -13,6 +13,10 @@ async function get_user() {
     if (user.status == 400) {
         return false;
     }
+    if (!user) {
+        localStorage.clear()
+        window.location.pathname = `/`;
+    }
     return user
 }
 
