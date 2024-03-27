@@ -3,21 +3,17 @@ function Footer() {
 }
 
 async function get_user() {
-    const token = localStorage.getItem('token')
-    if (!token) {
-        return false;
-    }
-    const user = await fetch("http://localhost:8000/get_user/" + `${token}`, {
+    const user = await fetch("http://localhost:8000/get_user", {
         method: 'GET',
+        credentials: 'include'
         }).then(response => response.json());
     if (user.status == 400) {
         return false;
     }
     if (user.message == "Incorrect username or password") {
-        localStorage.clear()
-        window.location.pathname = `/`;
+        return false
     }
-    return user
+    return user;
 }
 
 async function user_is_logged_in() {
