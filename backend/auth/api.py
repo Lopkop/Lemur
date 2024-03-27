@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from fastapi import HTTPException, status, Response, Depends
+from fastapi import HTTPException, status, Response, Depends, Cookie
 from sqlalchemy.orm import scoped_session
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
@@ -37,11 +37,11 @@ class Auth:
         db.save_token(self.session, access_token, expiration_time, user.name)
 
         token_expires_in = (expiration_time - datetime.now()).total_seconds()
-        response.set_cookie(key="access_token", value=access_token, httponly=True, expires=int(token_expires_in),
-                            samesite='strict', secure=True)
+        response.set_cookie(key="access_token", value=access_token,
+                            expires=int(token_expires_in), httponly=True,
+                            secure=True, samesite='strict')
 
-        return schemas.AuthResponseModel(status=201, access_token=access_token,
-                                         token_expires_at=float(token_expires_in) // 60)
+        return schemas.AuthResponseModel(status=201, token_expires_at=float(token_expires_in) // 60)
 
     @auth_router.post('/login', response_model=schemas.AuthResponseModel)
     async def login(self, user: db_schemas.UserModel, response: Response):
@@ -62,22 +62,28 @@ class Auth:
             )
         access_token = db.fetch_token_by_username(self.session, user.name)
         token_expires_in = (access_token.expires_at - datetime.now()).total_seconds()
-        response.set_cookie(key="access_token", value=access_token.token, httponly=True,
-                            expires=int(token_expires_in), samesite='strict', secure=True)
+        response.set_cookie(key="access_token", value=access_token.token,
+                            expires=int(token_expires_in), httponly=True,
+                            secure=True, samesite='strict')
         response.status_code = 200
-        return schemas.AuthResponseModel(status=200, access_token=access_token.token,
-                                         token_expires_at=float(token_expires_in) // 60)
+        return schemas.AuthResponseModel(status=200, token_expires_at=float(token_expires_in) // 60)
 
-    @auth_router.get('/get_user/{token}')
-    async def get_user(self, token: str):
-        user = db.fetch_user_by_access_token(self.session, token)
+    @auth_router.get('/get_user')
+    async def get_user(self, access_token: str = Cookie(None)):
+        if not access_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        user = db.fetch_user_by_access_token(self.session, access_token)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        user_expires_in = (user.lifetime - datetime.now()).total_seconds()//60
+        user_expires_in = (user.lifetime - datetime.now()).total_seconds() // 60
         user_model = db_schemas.UserModel(name=user.name, password=None, lifetime=user_expires_in)
         try:
             token_expired_check(self.session, user.name)
