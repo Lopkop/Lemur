@@ -8,8 +8,9 @@ async function login(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
     let lifetime = 5;
-    let response = await fetch("http://localhost:8000/login/", {
+    let response = await fetch("http://localhost:8000/login", {
         method: 'POST',
+        credentials: 'include',
         headers: {
         "Content-type": "application/json"
         },
@@ -20,9 +21,8 @@ async function login(event) {
         })
     }).then(response => response.json());
 
-    if (response.status === 201) {
-        localStorage.token = response.access_token;
-        window.location.pathname = `/chats`; // todo: render new page
+    if (response.status === 200) {
+        window.location.pathname = `/chats`;
     } else {
         alert("Either username or password is incorrect");
     }

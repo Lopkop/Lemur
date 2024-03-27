@@ -12,6 +12,7 @@ async function signup(event) {
         headers: {
         "Content-type": "application/json"
         },
+        credentials: 'include',
         body: JSON.stringify({
         "name": `${username}`,
         "password": `${password}`,
@@ -20,8 +21,7 @@ async function signup(event) {
     }).then(response => response.json());
 
     if (response.status === 201) {
-        localStorage.token = response.access_token;
-        window.location.pathname = `/chats`; // todo: render new page
+        window.location.pathname = `/chats`;
     } else {
         alert("User with this username already exists");
     }
