@@ -13,7 +13,7 @@ async function get_user() {
     if (user.status == 400) {
         return false;
     }
-    if (!user) {
+    if (user.message == "Incorrect username or password") {
         localStorage.clear()
         window.location.pathname = `/`;
     }

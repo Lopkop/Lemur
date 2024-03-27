@@ -71,14 +71,14 @@ class Auth:
     @auth_router.get('/get_user/{token}')
     async def get_user(self, token: str):
         user = db.fetch_user_by_access_token(self.session, token)
-        user_expires_in = (user.lifetime - datetime.now()).total_seconds()//60
-        user_model = db_schemas.UserModel(name=user.name, password=None, lifetime=user_expires_in)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        user_expires_in = (user.lifetime - datetime.now()).total_seconds()//60
+        user_model = db_schemas.UserModel(name=user.name, password=None, lifetime=user_expires_in)
         try:
             token_expired_check(self.session, user.name)
         except LoginFailed:
