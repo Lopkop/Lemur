@@ -108,7 +108,7 @@ class DatabaseService:
         decoded = jwt.decode(access_token, settings.SECRET_KEY)
         return self.fetch_user_by_name(session, decoded['name'])
 
-    def remove_user(self, session: scoped_session, user):
-        user = self.fetch_user_by_name(session, user.name)
+    def remove_user(self, session: scoped_session, username: str):
+        user = self.fetch_user_by_name(session, username)
         session.delete(user)  # automatically removes token associated with the user
         session.commit()
