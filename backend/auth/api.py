@@ -7,7 +7,7 @@ from fastapi_utils.inferring_router import InferringRouter
 import auth.schemas as schemas
 import db.schemas as db_schemas
 from db.dbapi import DatabaseService
-from auth.security import authenticate_user, create_access_token, token_expired_check
+from auth.security import authenticate_user, create_access_token, token_expired, verify_user
 from auth.exceptions import LoginFailed, UserExpired
 
 db = DatabaseService()
@@ -47,7 +47,6 @@ class Auth:
     async def login(self, user: db_schemas.UserModel, response: Response):
         try:
             user = authenticate_user(self.session, user.name, user.password)
-            token_expired_check(self.session, user.name)
         except LoginFailed:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -73,30 +72,10 @@ class Auth:
         if not access_token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
+                detail="Token was not provided",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        user = db.fetch_user_by_access_token(self.session, access_token)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        user = verify_user(self.session, access_token)
         user_expires_in = (user.lifetime - datetime.now()).total_seconds() // 60
         user_model = db_schemas.UserModel(name=user.name, password=None, lifetime=user_expires_in)
-        try:
-            token_expired_check(self.session, user.name)
-        except LoginFailed:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        except UserExpired:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Your account was deleted",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
         return user_model
