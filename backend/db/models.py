@@ -44,7 +44,7 @@ class User(Base):
 
     def __repr__(self):
         return (f"<User(name='{self.name}', lifetime='{self.lifetime}', "
-                f"chatroom='[{self.chatrooms}]', messages='{self.messages}')>")
+                f"messages='{self.messages}')>")
 
 
 class ChatRoom(Base):
