@@ -11,6 +11,7 @@ async function connect(event) {
         headers: {
         "Content-type": "application/json"
         },
+        credentials: 'include',
         body: JSON.stringify({
         "chatname": `${chat}`,
         "username": `${user.name}`
