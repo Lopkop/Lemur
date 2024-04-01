@@ -81,21 +81,30 @@ export default function Chat() {
 
     function handleKeyPress(event) {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent default behavior of tabbing
-      // Trigger the click event of the "Send" button
+      event.preventDefault();
       document.getElementById("sendButton").click();
     }
   }
 
+    function copyText() {
+      var textToCopy = document.getElementById('copyText').textContent;
+      navigator.clipboard.writeText(textToCopy).then(function() {
+        console.log('Text copied to clipboard: ' + textToCopy);
+      }, function(err) {
+        console.error('Unable to copy text: ', err);
+      });
+    }
   return (
   <div>
     <div className="chat-container">
       <header className="chat-header">
-        <h1>{chatname}</h1>
+        <div className="container" id="container">
+          <h1 onClick={copyText} className="chat-name" id="copyText">{chatname}</h1>
+        </div>
       </header>
       <div className="chat-messages" ref={messagesRef}></div>
       <div className="chat-input">
-        <TextInput id="messageInput" labelText="Type a message" onKeyDown={handleKeyPress}/>
+        <TextInput id="messageInput" placeholder="Type a message" onKeyDown={handleKeyPress}/>
         <Button id="sendButton" onClick={sendMessage}>Send</Button>
       </div>
     </div>
