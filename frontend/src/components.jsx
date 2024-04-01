@@ -3,17 +3,21 @@ function Footer() {
 }
 
 async function get_user() {
-    const user = await fetch("http://localhost:8000/get_user", {
-        method: 'GET',
-        credentials: 'include'
-        }).then(response => response.json());
-    if (user.status == 400) {
+    try {
+        const response = await fetch("http://localhost:8000/get_user", {
+            method: 'GET',
+            credentials: 'include'
+        });
+        const user = await response.json();
+
+        if (response.status === 400 || user.message === "Incorrect username or password" || user.message === "Token was not provided") {
+            return false;
+        }
+        return user;
+    } catch (error) {
+        console.error("Error fetching user:", error);
         return false;
     }
-    if (user.message == "Incorrect username or password") {
-        return false
-    }
-    return user;
 }
 
 async function user_is_logged_in() {
@@ -32,7 +36,8 @@ async function createChat(event) {
         method: 'POST',
         headers: {
         "Content-type": "application/json"
-        }
+        },
+        credentials: 'include'
     }).then(response => response.json());
 
     if (response.status === 201) {
@@ -41,5 +46,12 @@ async function createChat(event) {
     }
 }
 
+// setInterval(showTime, 1000);
+function showTime() {
+    let time = new Date();
+    let hour = time.getHours();
+    let min = time.getMinutes();
+    let sec = time.getSeconds();
+}
 
 export {Footer, user_is_logged_in, get_user, createChat}
