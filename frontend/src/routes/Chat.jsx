@@ -1,6 +1,6 @@
 import { React, useEffect, useState, useRef }  from "react";
 import { Footer, get_user  } from "../components";
-import '../styles/chat.css'; // Import the CSS file for styling
+import '../styles/chat.css';
 
 import {
 Tile,
@@ -19,100 +19,87 @@ const chatname = localStorage.getItem('chat')
 
 
 export default function Chat() {
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const messageEndRef = useRef(null);
-  const websocketRef = useRef(null);
-      useEffect(() => {
-        const fetchMessages = async () => {
-          try {
-            const response = await fetch(`http://localhost:8000/get-messages?chatname=${chatname}`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch messages');
-            }
-            const data = await response.json();
-            setMessages(data);
-            scrollToBottom();
-          } catch (error) {
-            console.error('Error fetching messages:', error);
-          }
-        };
+//   const [messages, setMessages] = useState([]);
+//   const [newMessage, setNewMessage] = useState('');
+//   const messageEndRef = useRef(null);
+//   const websocketRef = useRef(null);
+//       useEffect(() => {
+//         const fetchMessages = async () => {
+//           try {
+//             const response = await fetch(`http://localhost:8000/get-messages?chatname=${chatname}`);
+//             if (!response.ok) {
+//               throw new Error('Failed to fetch messages');
+//             }
+//             const data = await response.json();
+//             setMessages(data);
+//           } catch (error) {
+//             console.error('Error fetching messages:', error);
+//           }
+//         };
+//         fetchMessages();
+//       }, [chatname]);
 
-        fetchMessages();
-      }, [chatname]);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(null);
+  const [ws, setWs] = useState(null);
+  const messagesRef = useRef(null);
+
   useEffect(() => {
-  const get_u = async () => {
-            let user = await get_user();
-        }
-    setUser(get_u())
-    console.log(user, 'FAFADFA')
-    websocketRef.current = new WebSocket(`ws://localhost:8000/${chatname}/a`);
-
-    websocketRef.current.onopen = () => {
-      console.log('Connected to websocket server');
-    };
-
-    websocketRef.current.onclose = () => {
-      console.log('Disconnected from websocket server');
-    };
-
-    websocketRef.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, message]);
-      scrollToBottom();
-    };
-
-    return () => {
-      if (websocketRef.current) {
-        websocketRef.current.close();
+    async function fetchData() {
+      const response = await get_user();
+      if (response) {
+        setUser(response.name);
+        const chatname = localStorage.getItem('chat');
+        const websocket = new WebSocket(`ws://localhost:8000/${chatname}/${response.name}`);
+        setWs(websocket);
       }
-    };
+    }
+    fetchData();
   }, []);
 
-  const scrollToBottom = () => {
-    if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    if (ws) {
+      ws.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        const newMessage = document.createElement('p');
+        newMessage.textContent = `${data.user} sent ${data.text}`;
+        messagesRef.current.appendChild(newMessage);
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      };
     }
-  };
+  }, [ws]);
 
-  const handleMessageChange = (event) => {
-    setNewMessage(event.target.value);
-  };
+  function sendMessage(event) {
+    const messageInput = document.getElementById("messageInput");
+    const message = messageInput.value;
+    if (ws && ws.readyState === WebSocket.OPEN && message) {
+      ws.send(message);
+      messageInput.value = "";
+    } else {
+      console.error("WebSocket connection not open.");
+    }
+  }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (newMessage.trim() === '') return;
-    const newMessageObj = newMessage.trim();
-    websocketRef.current.send(JSON.stringify(newMessageObj));
-    setNewMessage('');
-    scrollToBottom(); // Scroll to bottom when a new message is sent
-  };
+    function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent default behavior of tabbing
+      // Trigger the click event of the "Send" button
+      document.getElementById("sendButton").click();
+    }
+  }
 
   return (
-    <div className="message-container">
-      <ul className="message-list">
-        {messages.map((message, index) => (
-          <li key={index} className={`message-item ${message.user === 'me' ? 'me' : 'other'}`}>
-            <div className="message-content">
-              <span className="message-text">{message.text}</span>
-            </div>
-          </li>
-        ))}
-        <div ref={messageEndRef} />
-      </ul>
-      <form className="message-input-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className="message-input"
-          placeholder="Type your message..."
-          value={newMessage}
-          onChange={handleMessageChange}
-        />
-        <Button type="submit">
-          Send
-        </Button>
-      </form>
+  <div>
+    <div className="chat-container">
+      <header className="chat-header">
+        <h1>{chatname}</h1>
+      </header>
+      <div className="chat-messages" ref={messagesRef}></div>
+      <div className="chat-input">
+        <TextInput id="messageInput" labelText="Type a message" onKeyDown={handleKeyPress}/>
+        <Button id="sendButton" onClick={sendMessage}>Send</Button>
+      </div>
     </div>
+    <Footer />
+  </div>
   );
 }
