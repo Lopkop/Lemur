@@ -113,3 +113,50 @@ a {
   color: #7SDBAD;
   text-shadow: 0 0 5px #NONONO;
 }
+
+  .tile-header {
+    display: flex;
+    padding: 10px 0px 10px 0px;
+    justify-content: space-between;
+  }
+  .messages-history {
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 10px 0px 10px 0px;
+    min-height: 0;
+    height: calc(0.7 * 700px);
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  .tile-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .message-tile {
+    padding: 20px;
+    max-width: 50%;
+    margin: 10px 0px 10px 0px;
+  }
+
+  .align-right {
+    position: relative;
+    left: 100%;
+    translate: -105%;
+    background-color: #0f62fe;
+    margin-right: 10px;
+  }
+
+  .align-left {
+    background-color: #6f6f6f;
+  }
+  .snackbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }

@@ -1,57 +1,38 @@
-.message-container {
-  height: calc(100vh - 100px); /* Adjust height as needed */
-  overflow-y: auto;
-  padding: 10px;
-}
 
-.message-list {
-  list-style-type: none;
-  padding: 0;
-}
 
-.message-item {
+.chat-container {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 10px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-.message-item.me .message-content {
-  background-color: #dcf8c6;
-  border-bottom-right-radius: 0;
+.chat-header {
+  margin-bottom: 20px;
 }
 
-.message-item.other .message-content {
-  background-color: #e5e5ea;
-  border-bottom-left-radius: 0;
+.chat-messages {
+  overflow-y: auto;
+  max-height: 60vh;
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
 }
 
-.message-content {
-  max-width: 70%;
-  padding: 10px 15px;
-  border-radius: 15px;
+.chat-input {
+  display: flex;
+  align-items: center;
+  width: 80%;
+  margin-top: 20px;
 }
 
-.message-text {
-  color: #000;
+.chat-input > * {
+  margin-right: 10px;
 }
 
-/* Optional: Add styles for sender's name */
-.message-item .sender-name {
-  font-size: 0.8rem;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-/* Optional: Add scrollbar style */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.4);
+.chat-input button {
+  flex-shrink: 0;
 }
