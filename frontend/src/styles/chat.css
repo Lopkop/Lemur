@@ -1,4 +1,6 @@
-
+a {
+  text-decoration: none;
+}
 
 .chat-container {
   display: flex;
@@ -35,4 +37,32 @@
 
 .chat-input button {
   flex-shrink: 0;
+}
+
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.copy-icon {
+  display: none;
+  position: absolute;
+  top: -20px; /* Adjust as needed */
+  left: 0;
+  cursor: pointer;
+}
+
+.text:hover + .copy-icon {
+  display: inline-block;
+}
+
+.chat-name {
+    cursor: pointer;
+}
+
+.chat-name:hover {
+  transition: box-shadow 0.3s ease-in-out;
+  background: white;
+  text-decoration: none;
+  color: #73ABAD;
 }
