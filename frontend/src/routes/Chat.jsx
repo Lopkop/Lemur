@@ -19,25 +19,42 @@ const chatname = localStorage.getItem('chat')
 
 
 export default function Chat() {
-//   const [messages, setMessages] = useState([]);
-//   const [newMessage, setNewMessage] = useState('');
-//   const messageEndRef = useRef(null);
-//   const websocketRef = useRef(null);
-//       useEffect(() => {
-//         const fetchMessages = async () => {
-//           try {
-//             const response = await fetch(`http://localhost:8000/get-messages?chatname=${chatname}`);
-//             if (!response.ok) {
-//               throw new Error('Failed to fetch messages');
-//             }
-//             const data = await response.json();
-//             setMessages(data);
-//           } catch (error) {
-//             console.error('Error fetching messages:', error);
-//           }
-//         };
-//         fetchMessages();
-//       }, [chatname]);
+  const [messages, setMessages] = useState([]);
+      useEffect(() => {
+        const fetchMessages = async () => {
+          try {
+            const response = await fetch(`http://localhost:8000/get-messages/${chatname}`, {
+            method: 'GET',
+            credentials: 'include'
+            })
+
+            const data = await response.json();
+            setMessages(data);
+          } catch (error) {
+            console.error('Error fetching messages:', error);
+          }
+        };
+        fetchMessages();
+      }, [chatname]);
+
+    function Message({ user, text, created_at }) {
+      return (
+        <div>
+          <div><strong>{user}</strong> ({created_at}):</div>
+          <div>{text}</div>
+        </div>
+      );
+    }
+
+    function MessageList({ messages }) {
+      return (
+        <div>
+          {messages.map((message, index) => (
+            <Message key={index} {...message} />
+          ))}
+        </div>
+      );
+    }
 
   const [user, setUser] = useState(null);
   const [ws, setWs] = useState(null);
@@ -60,9 +77,11 @@ export default function Chat() {
     if (ws) {
       ws.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        const newMessage = document.createElement('p');
-        newMessage.textContent = `${data.user} sent ${data.text}`;
-        messagesRef.current.appendChild(newMessage);
+        let node = document.getElementById('messageContainer');
+        node.insertAdjacentHTML('beforeend', `        <div>
+          <div><strong>${data.user}</strong> (${data.created_at}):</div>
+          <div>${data.text}</div>
+        </div>`);
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
       };
     }
@@ -89,7 +108,6 @@ export default function Chat() {
     function copyText() {
       var textToCopy = document.getElementById('copyText').textContent;
       navigator.clipboard.writeText(textToCopy).then(function() {
-        console.log('Text copied to clipboard: ' + textToCopy);
       }, function(err) {
         console.error('Unable to copy text: ', err);
       });
@@ -102,9 +120,11 @@ export default function Chat() {
           <h1 onClick={copyText} className="chat-name" id="copyText">{chatname}</h1>
         </div>
       </header>
-      <div className="chat-messages" ref={messagesRef}></div>
+      <div className="chat-messages" id="messageContainer" ref={messagesRef}>
+      <MessageList messages={messages} />
+      </div>
       <div className="chat-input">
-        <TextInput id="messageInput" placeholder="Type a message" onKeyDown={handleKeyPress}/>
+        <input id="messageInput" placeholder="Type a message" onKeyDown={handleKeyPress}/>
         <Button id="sendButton" onClick={sendMessage}>Send</Button>
       </div>
     </div>
