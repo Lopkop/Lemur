@@ -2,6 +2,7 @@ from functools import lru_cache
 from typing import Iterator
 
 from fastapi_utils.session import FastAPISessionMaker
+from sqlalchemy import asc
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.scoping import scoped_session
 from jose import jwt
@@ -94,9 +95,11 @@ class DatabaseService:
     @staticmethod
     def fetch_chatroom_messages(session: scoped_session, chatroom_name: str):
         """Fetch all messages in a chat room"""
-        messages = session.query(Message).filter_by(chatroom=chatroom_name).all()
-        # convert all message models to schemas, so it could be used in application
-        messages = [dict(user=message.user, text=message.text, created_at=message.created_at) for message in messages]
+        messages = session.query(Message).filter_by(chatroom=chatroom_name).order_by(asc(Message.created_at)).all()
+        messages = [dict(user=message.user,
+                         text=message.text,
+                         created_at=message.created_at.strftime("%H:%M"))
+                    for message in messages]
         return messages
 
     @staticmethod
@@ -107,6 +110,10 @@ class DatabaseService:
     def fetch_user_by_access_token(self, session, access_token):
         decoded = jwt.decode(access_token, settings.SECRET_KEY)
         return self.fetch_user_by_name(session, decoded['name'])
+
+    @staticmethod
+    def fetch_access_token_by_name(session, name):
+        return session.query(Token).filter_by(token=name).first()
 
     def remove_user(self, session: scoped_session, username: str):
         user = self.fetch_user_by_name(session, username)
