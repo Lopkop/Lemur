@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import scoped_session
 from fastapi import WebSocket, Depends, WebSocketDisconnect
 from fastapi_utils.cbv import cbv
@@ -27,11 +29,11 @@ class WebSocketCBV:
         try:
             while True:
                 text = await websocket.receive_text()
-                message = MessageModel(text=text, user=username)
+                message = MessageModel(text=text, user=username, created_at=datetime.now().strftime("%H:%M"))
                 db.save_message(self.session, chatroom, message)
 
                 await manager.send_message(chatroom, message.json())
-                print(f'{username} sent "{text}" to {chatroom}')  # need to log, not print
+                print(f'{username} sent "{text}" to {chatroom}')  # TODO: need to log, not print
 
         except WebSocketDisconnect:
             manager.disconnect(chatroom, username)
