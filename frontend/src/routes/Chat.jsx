@@ -19,7 +19,41 @@ const chatname = localStorage.getItem('chat')
 
 
 export default function Chat() {
-  const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState(null);
+  const [ws, setWs] = useState(null);
+  const messagesRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await get_user();
+      if (response) {
+        setUser(response.name);
+        const chatname = localStorage.getItem('chat');
+        const websocket = new WebSocket(`ws://localhost:8000/${chatname}/${response.name}`);
+        setWs(websocket);
+      }
+      else {
+         window.location.pathname = `/`;
+      }
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (ws) {
+      ws.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        let node = document.getElementById('messageContainer');
+        node.insertAdjacentHTML('beforeend', `        <div>
+          <div><strong>${data.user}</strong> (${data.created_at}):</div>
+          <div>${data.text}</div>
+        </div>`);
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      };
+    }
+  }, [ws]);
+
+    const [messages, setMessages] = useState([]);
       useEffect(() => {
         const fetchMessages = async () => {
           try {
@@ -46,46 +80,8 @@ export default function Chat() {
       );
     }
 
-    function MessageList({ messages }) {
-      return (
-        <div>
-          {messages.map((message, index) => (
-            <Message key={index} {...message} />
-          ))}
-        </div>
-      );
-    }
 
-  const [user, setUser] = useState(null);
-  const [ws, setWs] = useState(null);
-  const messagesRef = useRef(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      const response = await get_user();
-      if (response) {
-        setUser(response.name);
-        const chatname = localStorage.getItem('chat');
-        const websocket = new WebSocket(`ws://localhost:8000/${chatname}/${response.name}`);
-        setWs(websocket);
-      }
-    }
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (ws) {
-      ws.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        let node = document.getElementById('messageContainer');
-        node.insertAdjacentHTML('beforeend', `        <div>
-          <div><strong>${data.user}</strong> (${data.created_at}):</div>
-          <div>${data.text}</div>
-        </div>`);
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      };
-    }
-  }, [ws]);
 
   function sendMessage(event) {
     const messageInput = document.getElementById("messageInput");
@@ -111,6 +107,16 @@ export default function Chat() {
       }, function(err) {
         console.error('Unable to copy text: ', err);
       });
+    }
+
+    function MessageList({ messages }) {
+      return (
+        <div>
+          {messages.map((message, index) => (
+            <Message key={index} {...message} />
+          ))}
+        </div>
+      );
     }
   return (
   <div>
