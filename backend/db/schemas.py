@@ -21,6 +21,7 @@ class MessageModel(BaseModel):
 
     user: str
     text: str
+    created_at: str | None
 
 
 class ChatRoomModel(BaseModel):
