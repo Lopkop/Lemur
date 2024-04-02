@@ -10,7 +10,7 @@ async function get_user() {
         });
         const user = await response.json();
 
-        if (response.status === 400 || user.message === "Incorrect username or password" || user.message === "Token was not provided") {
+        if (response.status == 401 || response.status === 400 || user.message === "Incorrect username or password" || user.message === "Token was not provided") {
             return false;
         }
         return user;
