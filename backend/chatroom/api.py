@@ -7,6 +7,7 @@ from .utils import RandomIdGenerator, create_and_get_chatroom
 from chatroom.schemas import ChatRequest
 from db.dbapi import DatabaseService
 from auth import security
+from config import logger
 
 db = DatabaseService()
 chat_router = InferringRouter()
@@ -19,7 +20,8 @@ class ChatCBV:
     @chat_router.post('/create-chat')
     async def create_chat(self, username, access_token: str = Cookie(None)):
         """Create chatroom and save to db"""
-        if not security.verify_user(self.session, access_token):
+        if not (access_token and security.verify_user(self.session, access_token)):
+            logger.info(username, access_token)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
@@ -42,22 +44,30 @@ class ChatCBV:
 
     @chat_router.post('/connect-to-chat')
     async def connect_to_chat(self, req: ChatRequest, access_token: str = Cookie(None)):
-        if not (user := security.verify_user(self.session, access_token)):
+        if not access_token or not (user := security.verify_user(self.session, access_token)):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         if not (chat := db.fetch_chat_by_name(self.session, req.chatname)):
-            return {"status": 400, "chatname": req.chatname}
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="There is no chat with that name",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         if user.name in {usr.user for usr in chat.users}:
-            return {"status": 420, "chatname": chat.name}
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User already in chat",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         db.add_user_to_chatroom(self.session, chatroom_name=chat.name, username=user.name)
         return {"status": 200, "chatname": chat.name}
 
     @chat_router.get('/get-messages/{chatroom_name}')
     def get_messages(self, chatroom_name, access_token: str = Cookie(None)):
-        if not security.verify_user(self.session, access_token):
+        if not (access_token and security.verify_user(self.session, access_token)):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",

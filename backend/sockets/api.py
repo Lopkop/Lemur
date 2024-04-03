@@ -8,6 +8,7 @@ from fastapi_utils.inferring_router import InferringRouter
 from db.dbapi import DatabaseService
 from db.schemas import MessageModel
 from sockets.connection_manager import ConnectionManager
+from config import logger
 
 socket_router = InferringRouter()
 manager = ConnectionManager()
@@ -33,7 +34,7 @@ class WebSocketCBV:
                 db.save_message(self.session, chatroom, message)
 
                 await manager.send_message(chatroom, message.json())
-                print(f'{username} sent "{text}" to {chatroom}')  # TODO: need to log, not print
+                logger.info(f'{username} sent "{text}" to {chatroom}')
 
         except WebSocketDisconnect:
             manager.disconnect(chatroom, username)

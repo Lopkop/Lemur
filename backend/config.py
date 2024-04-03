@@ -1,4 +1,8 @@
 from fastapi_utils.api_settings import BaseSettings
+from loguru import logger
+
+logger.add('logs/logs.json', format='{level} {time}, {message}', level='DEBUG',
+           rotation='100 MB', compression='zip')
 
 
 class Settings(BaseSettings):
