@@ -3,6 +3,7 @@ import secrets
 from pydantic import ValidationError
 
 from db.schemas import ChatRoomModel, MessageModel, UserModel
+from config import logger
 
 
 class RandomIdGenerator:
@@ -41,7 +42,7 @@ def create_and_get_user(username: str, password: str, lifetime: int) -> UserMode
         user = UserModel(name=username, password=password, lifetime=lifetime)
     except ValidationError as e:
         # todo: we can parse(e.json()) and return readable exception to the user
-        print(e.json())
+        logger.error(e.json())
     else:
         return user
 
@@ -51,7 +52,7 @@ def create_and_get_message(username: str, text: str) -> MessageModel:
     try:
         message = MessageModel(user=username, text=text)
     except ValidationError as e:
-        print(e.json())
+        logger.error(e.json())
     else:
         return message
 
@@ -61,6 +62,6 @@ def create_and_get_chatroom(username: str, name: str) -> ChatRoomModel:
     try:
         chatroom = ChatRoomModel(users=[username], name=name, messages=[])
     except ValidationError as e:
-        print(e.json())
+        logger.error(e.json())
     else:
         return chatroom
