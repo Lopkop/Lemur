@@ -29,7 +29,7 @@ function Root2_render() {
                     <h1>Chat Service</h1>
                 </header>
                 <main>
-                    <span className="some-text">The world is dual, so you have only two choices.</span>
+                    <span className="some-text">You have only two choices.</span>
                     <div className="auth-buttons-container">
                       <button onClick={(event) => createChat(event)} variant="secondary" className="login-button">
                         Create chat
