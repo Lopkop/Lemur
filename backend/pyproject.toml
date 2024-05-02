@@ -11,9 +11,9 @@ pytest = "^7.4.2"
 pytest-asyncio = "0.19.0"
 SQLAlchemy = "^1.4.39"
 psycopg2 = "^2.9.3"
-fastapi = "^0.103.1"
+fastapi = "^0.110.3"
 uvicorn = { extras = ["standard"], version = "^0.18.2" }
-python-multipart = "^0.0.6"
+python-multipart = "^0.0.7"
 python-jose = { extras = ["cryptography"], version = "^3.3.0" }
 bcrypt = "^4.1.2"
 passlib = "^1.7.4"
