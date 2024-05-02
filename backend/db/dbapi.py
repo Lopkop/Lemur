@@ -27,7 +27,7 @@ class DatabaseService:
     @staticmethod
     def save_user(session: scoped_session, user_model: UserModel) -> None:
         """Saves user object to database"""
-        from auth.security import hash_password
+        from api.auth.security import hash_password
         user = User(name=user_model.name, hashed_password=hash_password(user_model.password),
                     lifetime=user_model.lifetime)
         session.add(user)
