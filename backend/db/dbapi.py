@@ -12,13 +12,6 @@ from db.schemas import ChatRoomModel, MessageModel, UserModel, TokenModel
 from config import settings
 
 
-def save_chatroom(session: scoped_session, chatroom_model: ChatRoomModel, username: str) -> None:
-    chatroom = ChatRoom(name=chatroom_model.name)
-    session.add(chatroom)
-    session.commit()
-    session.refresh(chatroom)
-
-
 class DatabaseService:
     """DB API service"""
 
