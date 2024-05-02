@@ -4,18 +4,19 @@ from sqlalchemy.orm import scoped_session
 from fastapi_utils.cbv import cbv
 
 from .utils import RandomIdGenerator, create_and_get_chatroom
-from chatroom.schemas import ChatRequest
+from api.chatroom.schemas import ChatRequest
 from db.dbapi import DatabaseService
-from auth import security
+from api.auth import security
 from config import logger
 
 db = DatabaseService()
-chat_router = InferringRouter()
+chat_router = InferringRouter(tags=['chatroom'])
 
 
 @cbv(chat_router)
 class ChatCBV:
     session: scoped_session = Depends(db.get_db)
+    # try to put here access_token...
 
     @chat_router.post('/create-chat')
     async def create_chat(self, username, access_token: str = Cookie(None)):

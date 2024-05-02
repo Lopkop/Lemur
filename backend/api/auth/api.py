@@ -4,14 +4,14 @@ from sqlalchemy.orm import scoped_session
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
-import auth.schemas as schemas
+from api.auth import schemas
 import db.schemas as db_schemas
 from db.dbapi import DatabaseService
-from auth.security import authenticate_user, create_access_token, token_expired, verify_user
-from auth.exceptions import LoginFailed, UserExpired
+from api.auth.security import authenticate_user, create_access_token, verify_user
+from api.auth.exceptions import LoginFailed, UserExpired
 
 db = DatabaseService()
-auth_router = InferringRouter()
+auth_router = InferringRouter(tags=['auth'])
 
 
 @cbv(auth_router)

@@ -4,14 +4,16 @@ from passlib.context import CryptContext
 from jose import jwt
 from sqlalchemy.orm import scoped_session
 from fastapi import HTTPException, status
+from cryptography.fernet import Fernet
 
 from config import settings
 from db.dbapi import DatabaseService
-from auth.exceptions import LoginFailed, UserExpired
+from api.auth.exceptions import LoginFailed, UserExpired
 
 db = DatabaseService()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+fernet = Fernet(key=settings.ENCRYPTION_KEY)
 
 
 def verify_user(session: scoped_session, token: str):
@@ -58,5 +60,5 @@ def create_access_token(data: dict):
 
 
 def decode_access_token(token: str):
-    decoded = jwt.decode(token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
-    return decoded
+    decoded_jwt = jwt.decode(token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
+    return decoded_jwt

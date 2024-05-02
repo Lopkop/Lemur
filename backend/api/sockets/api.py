@@ -7,10 +7,10 @@ from fastapi_utils.inferring_router import InferringRouter
 
 from db.dbapi import DatabaseService
 from db.schemas import MessageModel
-from sockets.connection_manager import ConnectionManager
+from api.sockets.connection_manager import ConnectionManager
 from config import logger
 
-socket_router = InferringRouter()
+socket_router = InferringRouter(tags=['socket'])
 manager = ConnectionManager()
 db = DatabaseService()
 
