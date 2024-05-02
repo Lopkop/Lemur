@@ -11,9 +11,8 @@ from api.exception_handlers import (http_exception_handler,
                                     )
 
 router = APIRouter(prefix='/api')
-# router.include_router(auth_router)
+
 for r in (auth_router, chat_router, socket_router):
-    print('haha')
     router.include_router(r)
 
 exc_handlers = {(HTTPException, http_exception_handler),

@@ -22,7 +22,7 @@ class ChatCBV:
     async def create_chat(self, username, access_token: str = Cookie(None)):
         """Create chatroom and save to db"""
         if not (access_token and security.verify_user(self.session, access_token)):
-            logger.info(username, access_token)
+            logger.warning(username, access_token)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",

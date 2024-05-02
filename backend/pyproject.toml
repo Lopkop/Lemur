@@ -20,7 +20,6 @@ passlib = "^1.7.4"
 fastapi-utils = "^0.2.1"
 python-socketio = "^5.11.2"
 cryptography = "^42.0.5"
-loguru = "^0.7.2"
 alembic = "^1.13.1"
 
 [tool.poetry.dev-dependencies]
