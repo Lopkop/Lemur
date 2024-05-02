@@ -73,3 +73,5 @@ build/
 postgres
 
 .pytest_cache/
+/backend/logs/logs.txt
+logs/
