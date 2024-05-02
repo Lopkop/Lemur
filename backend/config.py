@@ -1,12 +1,19 @@
-from fastapi_utils.api_settings import BaseSettings
-from loguru import logger
+import logging
 
-logger.add('logs/logs.json', format='{level} {time}, {message}', level='DEBUG',
-           rotation='100 MB', compression='zip')
+from fastapi_utils.api_settings import BaseSettings
+
+logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s',
+                    filename='logs/logs.txt', level=logging.INFO)
+
+logging.getLogger("uvicorn.access").disabled = True
+
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.getLevelName(logging.DEBUG))
 
 
 class Settings(BaseSettings):
     DATABASE_URL: str
+    FRONTEND_URL: str
     SECRET_KEY: str
     ALGORITHM: str
     DEV: str
