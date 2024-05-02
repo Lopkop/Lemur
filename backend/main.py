@@ -1,13 +1,11 @@
 import uvicorn
-from fastapi import FastAPI, APIRouter, HTTPException, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.api_settings import get_api_settings
-from fastapi.responses import JSONResponse
 
-from auth.api import auth_router
-from chatroom.api import chat_router
 from config import settings
-from sockets.api import socket_router
+from api import router, exc_handlers
+from api.middleware import log_request_middleware
 
 
 def get_app() -> FastAPI:
@@ -18,20 +16,20 @@ def get_app() -> FastAPI:
 
 app = get_app()
 
-if settings.DEV:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.FRONTEND_URL],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.middleware('http')(log_request_middleware)
+
+for handler in exc_handlers:
+    app.add_exception_handler(handler[0], handler[1])
 
 # Add routers
-router = APIRouter(prefix="/api")
-router.include_router(auth_router, tags=['Auth'])
-router.include_router(chat_router, tags=['Chat'])
-router.include_router(socket_router, tags=['Socket'])
 app.include_router(router)
 
 
