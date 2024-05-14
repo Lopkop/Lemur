@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from db.dbapi import DatabaseService
 
 
-@pytest.fixture
+@pytest.fixture()
 def postgres():
     from config import settings
     from db.database import _create_tables
@@ -46,5 +46,19 @@ def fill_db(db_connection):
     )
 
     db_connection[0].execute(f"""INSERT INTO tokens (token,expires_at,"user")
-                             VALUES ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZXhpc3RpbmdfdXNlciJ9.9rgns-G5cW9RnadTqfxnmc8he3oGK7ytrsEkXRIAutU',
+                             VALUES ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+                             eyJuYW1lIjoiZXhpc3RpbmdfdXNlciJ9.
+                             9rgns-G5cW9RnadTqfxnmc8he3oGK7ytrsEkXRIAutU',
                              '{datetime.now() + timedelta(minutes=30)}','existing_user')""")
+
+    db_connection[0].execute(
+        "INSERT INTO users (name,hashed_password,lifetime) "
+        f"VALUES ('user_expired_token', '$2b$12$NlmobQnJ0.EMzOfJ9dZXfuj5lCl4RUuQdkC3MLAKPT/MRV2xJ2Qvi', "
+        f"'{datetime.now() + timedelta(minutes=30)}')"
+    )
+
+    db_connection[0].execute(f"""INSERT INTO tokens (token,expires_at,"user")
+                             VALUES ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+                             eyJuYW1lIjoidXNlcl9leHBpcmVkX3Rva2VuIn0.
+                             Fw-nuhxlknSHUc59C1665Z9Wg93kER-06kE45IWasTk',
+                             '{datetime.now() - timedelta(minutes=30)}','user_expired_token')""")
