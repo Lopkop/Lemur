@@ -19,7 +19,7 @@ fernet = Fernet(key=settings.ENCRYPTION_KEY)
 def verify_user(session: scoped_session, token: str):
     username = decode_access_token(token)['name']
     user = db.fetch_user_by_name(session, username)
-    if user.lifetime <= datetime.now() and token_expired(session, username):
+    if user.lifetime <= datetime.now() or token_expired(session, username):
         db.remove_user(session, username)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
