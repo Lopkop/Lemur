@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from db.dbapi import DatabaseService
 
 
-@pytest.fixture()
+@pytest.fixture(scope='module')
 def postgres():
     from config import settings
     from db.database import _create_tables
@@ -19,7 +19,7 @@ def postgres():
     drop_database(settings.DATABASE_URL)
 
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def db_connection(postgres):
     engine = create_engine(postgres,
                            pool_size=10,
@@ -37,7 +37,7 @@ def db_connection(postgres):
         engine.dispose()
 
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def fill_db(db_connection):
     db_connection[0].execute(
         "INSERT INTO users (name,hashed_password,lifetime) "
