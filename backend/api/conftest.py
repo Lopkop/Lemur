@@ -4,6 +4,8 @@ import pytest
 from sqlalchemy_utils import create_database, drop_database
 from sqlalchemy import create_engine
 
+from db.dbapi import DatabaseService
+
 
 @pytest.fixture
 def postgres():
@@ -19,10 +21,17 @@ def postgres():
 
 @pytest.fixture
 def db_connection(postgres):
-    engine = create_engine(postgres)
+    engine = create_engine(postgres,
+                           pool_size=10,
+                           max_overflow=2,
+                           pool_recycle=300,
+                           pool_pre_ping=True,
+                           pool_use_lifo=True
+                           )
     conn = engine.connect()
+    db = DatabaseService()
     try:
-        yield conn
+        yield conn, db
     finally:
         conn.close()
         engine.dispose()
@@ -30,7 +39,12 @@ def db_connection(postgres):
 
 @pytest.fixture
 def fill_db(db_connection):
-    db_connection.execute(
+    db_connection[0].execute(
         "INSERT INTO users (name,hashed_password,lifetime) "
-        f"VALUES ('existing_user', 'test', '{datetime.now() + timedelta(minutes=30)}')"
+        f"VALUES ('existing_user', '$2b$12$NlmobQnJ0.EMzOfJ9dZXfuj5lCl4RUuQdkC3MLAKPT/MRV2xJ2Qvi', "
+        f"'{datetime.now() + timedelta(minutes=30)}')"
     )
+
+    db_connection[0].execute(f"""INSERT INTO tokens (token,expires_at,"user")
+                             VALUES ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZXhpc3RpbmdfdXNlciJ9.9rgns-G5cW9RnadTqfxnmc8he3oGK7ytrsEkXRIAutU',
+                             '{datetime.now() + timedelta(minutes=30)}','existing_user')""")
