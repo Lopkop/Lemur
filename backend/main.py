@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.middleware('http')(log_request_middleware)
+app.middleware("http")(log_request_middleware)
 
 for handler in exc_handlers:
     app.add_exception_handler(handler[0], handler[1])

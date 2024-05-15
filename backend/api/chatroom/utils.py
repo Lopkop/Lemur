@@ -12,7 +12,7 @@ class RandomIdGenerator:
     def __init__(self):
         """Opens wordlists and stores them in memory"""
         with open("wordlists/nouns.txt") as nouns, open(
-                "wordlists/adjectives.txt"
+            "wordlists/adjectives.txt"
         ) as adjectives:
             self._nouns = [noun.strip() for noun in nouns]
             self._adjectives = [adj.strip() for adj in adjectives]

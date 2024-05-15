@@ -13,19 +13,27 @@ from fastapi.responses import Response
 from config import logger
 
 
-async def request_validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+async def request_validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     """
     This is a wrapper to the default RequestValidationException handler of FastAPI.
     This function will be called when client input is not valid.
     """
     body = await request.body()
     query_params = request.query_params._dict
-    detail = {"errors": exc.errors(), "body": body.decode(), "query_params": query_params}
+    detail = {
+        "errors": exc.errors(),
+        "body": body.decode(),
+        "query_params": query_params,
+    }
     logger.warning(detail)
     return await _request_validation_exception_handler(request, exc)
 
 
-async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse | Response:
+async def http_exception_handler(
+    request: Request, exc: HTTPException
+) -> JSONResponse | Response:
     """
     This is a wrapper to the default HTTPException handler of FastAPI.
     This function will be called when a HTTPException is explicitly raised.
@@ -33,14 +41,20 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
     return await _http_exception_handler(request, exc)
 
 
-async def unhandled_exception_handler(request: Request, exc: Exception) -> PlainTextResponse:
+async def unhandled_exception_handler(
+    request: Request, exc: Exception
+) -> PlainTextResponse:
     """
     This middleware will log all unhandled exceptions.
     Unhandled exceptions are all exceptions that are not HTTPExceptions, nor RequestValidationErrors.
     """
     host = getattr(getattr(request, "client", None), "host", None)
     port = getattr(getattr(request, "client", None), "port", None)
-    url = f"{request.url.path}?{request.query_params}" if request.query_params else request.url.path
+    url = (
+        f"{request.url.path}?{request.query_params}"
+        if request.query_params
+        else request.url.path
+    )
 
     exception_type, exception_value, exception_traceback = sys.exc_info()
     exception_name = getattr(exception_type, "__name__", None)

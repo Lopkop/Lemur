@@ -17,7 +17,7 @@ fernet = Fernet(key=settings.ENCRYPTION_KEY)
 
 
 def verify_user(session: scoped_session, token: str):
-    username = decode_access_token(token)['name']
+    username = decode_access_token(token)["name"]
     user = db.fetch_user_by_name(session, username)
     if user.lifetime <= datetime.now() or token_expired(session, username):
         db.remove_user(session, username)
@@ -60,5 +60,7 @@ def create_access_token(data: dict):
 
 
 def decode_access_token(token: str):
-    decoded_jwt = jwt.decode(token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
+    decoded_jwt = jwt.decode(
+        token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM
+    )
     return decoded_jwt

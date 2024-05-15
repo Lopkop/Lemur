@@ -43,8 +43,10 @@ class User(Base):
     token = relationship(Token, uselist=False, cascade="all,delete", backref="parent")
 
     def __repr__(self):
-        return (f"<User(name='{self.name}', lifetime='{self.lifetime}', "
-                f"messages='{self.messages}')>")
+        return (
+            f"<User(name='{self.name}', lifetime='{self.lifetime}', "
+            f"messages='{self.messages}')>"
+        )
 
 
 class ChatRoom(Base):
@@ -71,4 +73,6 @@ class UserChatRoom(Base):
     user = Column(String, ForeignKey("users.name"))
 
     def __repr__(self):
-        return f"<UserChatRoom(chatroom_name='{self.chatroom_name}', user='{self.user}'>"
+        return (
+            f"<UserChatRoom(chatroom_name='{self.chatroom_name}', user='{self.user}'>"
+        )

@@ -11,19 +11,19 @@ from api.auth.security import authenticate_user, create_access_token, verify_use
 from api.auth.exceptions import LoginFailed, UserExpired
 
 db = DatabaseService()
-auth_router = InferringRouter(tags=['auth'])
+auth_router = InferringRouter(tags=["auth"])
 
 
 @cbv(auth_router)
 class Auth:
     session: scoped_session = Depends(db.get_db)
 
-    @auth_router.post('/sign-up', response_model=schemas.AuthResponseModel)
+    @auth_router.post("/sign-up", response_model=schemas.AuthResponseModel)
     async def sign_up(self, user: db_schemas.UserModel, response: Response):
         if db.fetch_user_by_name(self.session, user.name):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail='User with this name already exists',
+                detail="User with this name already exists",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
@@ -37,13 +37,20 @@ class Auth:
         db.save_token(self.session, access_token, expiration_time, user.name)
 
         token_expires_in = (expiration_time - datetime.now()).total_seconds()
-        response.set_cookie(key="access_token", value=access_token,
-                            expires=int(token_expires_in), httponly=True,
-                            secure=True, samesite='strict')
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            expires=int(token_expires_in),
+            httponly=True,
+            secure=True,
+            samesite="strict",
+        )
 
-        return schemas.AuthResponseModel(status=201, token_expires_at=float(token_expires_in) // 60)
+        return schemas.AuthResponseModel(
+            status=201, token_expires_at=float(token_expires_in) // 60
+        )
 
-    @auth_router.post('/login', response_model=schemas.AuthResponseModel)
+    @auth_router.post("/login", response_model=schemas.AuthResponseModel)
     async def login(self, user: db_schemas.UserModel, response: Response):
         try:
             user = authenticate_user(self.session, user.name, user.password)
@@ -61,13 +68,20 @@ class Auth:
             )
         access_token = db.fetch_token_by_username(self.session, user.name)
         token_expires_in = (access_token.expires_at - datetime.now()).total_seconds()
-        response.set_cookie(key="access_token", value=access_token.token,
-                            expires=int(token_expires_in), httponly=True,
-                            secure=True, samesite='strict')
+        response.set_cookie(
+            key="access_token",
+            value=access_token.token,
+            expires=int(token_expires_in),
+            httponly=True,
+            secure=True,
+            samesite="strict",
+        )
         response.status_code = 200
-        return schemas.AuthResponseModel(status=200, token_expires_at=float(token_expires_in) // 60)
+        return schemas.AuthResponseModel(
+            status=200, token_expires_at=float(token_expires_in) // 60
+        )
 
-    @auth_router.get('/get_user')
+    @auth_router.get("/get_user")
     async def get_user(self, access_token: str = Cookie(None)):
         if not access_token:
             raise HTTPException(
@@ -77,5 +91,7 @@ class Auth:
             )
         user = verify_user(self.session, access_token)
         user_expires_in = (user.lifetime - datetime.now()).total_seconds() // 60
-        user_model = db_schemas.UserModel(name=user.name, password=None, lifetime=user_expires_in)
+        user_model = db_schemas.UserModel(
+            name=user.name, password=None, lifetime=user_expires_in
+        )
         return user_model

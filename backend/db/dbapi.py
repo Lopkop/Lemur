@@ -28,14 +28,20 @@ class DatabaseService:
     def save_user(session: scoped_session, user_model: UserModel) -> None:
         """Saves user object to database"""
         from api.auth.security import hash_password
-        user = User(name=user_model.name, hashed_password=hash_password(user_model.password),
-                    lifetime=user_model.lifetime)
+
+        user = User(
+            name=user_model.name,
+            hashed_password=hash_password(user_model.password),
+            lifetime=user_model.lifetime,
+        )
         session.add(user)
         session.commit()
         session.refresh(user)
 
     @staticmethod
-    def save_token(session: scoped_session, token: TokenModel, expires_at, user_name: str) -> None:
+    def save_token(
+        session: scoped_session, token: TokenModel, expires_at, user_name: str
+    ) -> None:
         """Saves token object to database"""
         token = Token(token=token, expires_at=expires_at, user=user_name)
         session.add(token)
@@ -51,7 +57,7 @@ class DatabaseService:
 
     @staticmethod
     def save_message(
-            session: scoped_session, chatroom_name: str, message_model: MessageModel
+        session: scoped_session, chatroom_name: str, message_model: MessageModel
     ) -> None:
         """Saves a message to the chatroom"""
         message = Message(
@@ -65,9 +71,7 @@ class DatabaseService:
 
     @staticmethod
     def add_user_to_chatroom(
-            session: scoped_session,
-            username: str,
-            chatroom_name: str
+        session: scoped_session, username: str, chatroom_name: str
     ):
         user_chatroom = UserChatRoom(chatroom_name=chatroom_name, user=username)
         session.add(user_chatroom)
@@ -88,11 +92,20 @@ class DatabaseService:
     @staticmethod
     def fetch_chatroom_messages(session: scoped_session, chatroom_name: str):
         """Fetch all messages in a chat room"""
-        messages = session.query(Message).filter_by(chatroom=chatroom_name).order_by(asc(Message.created_at)).all()
-        messages = [dict(user=message.user,
-                         text=message.text,
-                         created_at=message.created_at.strftime("%H:%M"))
-                    for message in messages]
+        messages = (
+            session.query(Message)
+            .filter_by(chatroom=chatroom_name)
+            .order_by(asc(Message.created_at))
+            .all()
+        )
+        messages = [
+            dict(
+                user=message.user,
+                text=message.text,
+                created_at=message.created_at.strftime("%H:%M"),
+            )
+            for message in messages
+        ]
         return messages
 
     @staticmethod
@@ -102,7 +115,7 @@ class DatabaseService:
 
     def fetch_user_by_access_token(self, session, access_token):
         decoded = jwt.decode(access_token, settings.SECRET_KEY)
-        return self.fetch_user_by_name(session, decoded['name'])
+        return self.fetch_user_by_name(session, decoded["name"])
 
     @staticmethod
     def fetch_access_token_by_name(session, name):

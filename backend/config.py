@@ -2,8 +2,11 @@ import logging
 
 from fastapi_utils.api_settings import BaseSettings
 
-logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s',
-                    filename='logs/logs.txt', level=logging.INFO)
+logging.basicConfig(
+    format="%(levelname)s: %(asctime)s: %(message)s",
+    filename="logs/logs.txt",
+    level=logging.INFO,
+)
 
 logging.getLogger("uvicorn.access").disabled = True
 
@@ -18,6 +21,7 @@ class Settings(BaseSettings):
     ALGORITHM: str
     DEV: str
     LOG_LEVEL: str
+    ENCRYPTION_KEY: str
 
 
-settings = Settings(_env_file='.env')
+settings = Settings(_env_file=".env")
