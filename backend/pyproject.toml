@@ -6,7 +6,7 @@ authors = ["Lopkop <lopkophacked@protonmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "3.11.2"
+python = "~3.11.2"
 pytest = "^7.4.2"
 pytest-asyncio = "0.19.0"
 SQLAlchemy = "^1.4.39"
