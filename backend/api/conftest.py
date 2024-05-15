@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from db.dbapi import DatabaseService
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def postgres():
     from config import settings
     from db.database import _create_tables
@@ -19,15 +19,16 @@ def postgres():
     drop_database(settings.DATABASE_URL)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def db_connection(postgres):
-    engine = create_engine(postgres,
-                           pool_size=10,
-                           max_overflow=2,
-                           pool_recycle=300,
-                           pool_pre_ping=True,
-                           pool_use_lifo=True
-                           )
+    engine = create_engine(
+        postgres,
+        pool_size=10,
+        max_overflow=2,
+        pool_recycle=300,
+        pool_pre_ping=True,
+        pool_use_lifo=True,
+    )
     conn = engine.connect()
     db = DatabaseService()
     try:
@@ -37,7 +38,7 @@ def db_connection(postgres):
         engine.dispose()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def fill_db(db_connection):
     db_connection[0].execute(
         "INSERT INTO users (name,hashed_password,lifetime) "
@@ -62,3 +63,7 @@ def fill_db(db_connection):
                              eyJuYW1lIjoidXNlcl9leHBpcmVkX3Rva2VuIn0.
                              Fw-nuhxlknSHUc59C1665Z9Wg93kER-06kE45IWasTk',
                              '{datetime.now() - timedelta(minutes=30)}','user_expired_token')""")
+
+    db_connection[0].execute(
+        "INSERT INTO chatrooms (name) " "VALUES ('existing_chat_room')"
+    )
