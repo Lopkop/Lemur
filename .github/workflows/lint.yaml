@@ -1,26 +1,24 @@
 name: Lint
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_call
 
 jobs:
   lint:
+    name: Runs pre-commit
     runs-on: ubuntu-latest
-
-    env:
-      PYTHON_VERSION: "3.9.12"
-
     steps:
-      - name: Checks out repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v3
+      - name: Install Python Dependencies
+        uses: HassanAbouelela/actions/setup-python@setup-python_v1.5.0
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python_version: "3.11"
+          install_args: "--with=dev"
 
-      - name: Run black
-        uses: psf/black@stable
+      - name: Run pre-commit hooks
+        run: SKIP=ruff-lint pre-commit run --all-files
+
+      - name: Run ruff
+        run: "ruff check --output-format=github ."
