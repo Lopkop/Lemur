@@ -10,15 +10,16 @@ from api.auth import security
 from config import logger
 
 db = DatabaseService()
-chat_router = InferringRouter(tags=['chatroom'])
+chat_router = InferringRouter(tags=["chatroom"])
 
 
 @cbv(chat_router)
 class ChatCBV:
     session: scoped_session = Depends(db.get_db)
+
     # try to put here access_token...
 
-    @chat_router.post('/create-chat')
+    @chat_router.post("/create-chat")
     async def create_chat(self, username, access_token: str = Cookie(None)):
         """Create chatroom and save to db"""
         if not (access_token and security.verify_user(self.session, access_token)):
@@ -43,9 +44,13 @@ class ChatCBV:
 
         return {"status": 201, "chatroom": chat}
 
-    @chat_router.post('/connect-to-chat')
+    @chat_router.post("/connect-to-chat")
     async def connect_to_chat(self, req: ChatRequest, access_token: str = Cookie(None)):
-        if not access_token or not (user := security.verify_user(self.session, access_token)):
+        if (
+            not access_token
+            or not (user := security.verify_user(self.session, access_token))
+            or user.name != req.username
+        ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
@@ -63,10 +68,12 @@ class ChatCBV:
                 detail="User already in chat",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        db.add_user_to_chatroom(self.session, chatroom_name=chat.name, username=user.name)
+        db.add_user_to_chatroom(
+            self.session, chatroom_name=chat.name, username=user.name
+        )
         return {"status": 200, "chatname": chat.name}
 
-    @chat_router.get('/get-messages/{chatroom_name}')
+    @chat_router.get("/get-messages/{chatroom_name}")
     def get_messages(self, chatroom_name, access_token: str = Cookie(None)):
         if not (access_token and security.verify_user(self.session, access_token)):
             raise HTTPException(
