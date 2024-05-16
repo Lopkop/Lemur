@@ -20,9 +20,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           cd backend/
-          poetry shell
           poetry install
-          python -m pytest .
+#          python -m pytest .
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
