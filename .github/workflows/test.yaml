@@ -20,6 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           cd backend/
+          poetry shell
           poetry install
           python -m pytest .
 
